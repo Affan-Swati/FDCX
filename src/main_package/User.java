@@ -14,12 +14,19 @@ class User
     private boolean isVerified;
     private Account account;
     
-    public User(String username, String email, String password, String CNIC, String phoneNumber) 
+    public User(String name ,String username, String email, String password, String CNIC, String phoneNumber) 
     {
+    	this.name = name;
         this.username = username;
         this.email = email;
         this.password = password;
         this.CNIC = CNIC;
         this.phoneNumber = phoneNumber;
+        this.account = new Account();
+    }
+    
+    public String getName()
+    {
+    	return this.username;
     }
 }

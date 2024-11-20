@@ -13,7 +13,9 @@ public class Account
     public Account()
     {
     	 this.wallet = new Wallet();
+    	 subscription = new Subscription();
     	 this.loyaltyPoints = 0;
+    	 
     }
     
     public Wallet getWallet() 

@@ -9,7 +9,9 @@ public class FDCX
     private List<Admin> admins;
     private List<TransactionLog> transactionLogs;
     private StockManager stockManager;
-    private FraudMonitor fraudMonitor;
+    private CurrencyManager currencyManager;
+    private BankingService bankingServices;
+    private CryptoService cryptoServices;
     private NADRA nadra; 
     private FBR fbr;
 
@@ -18,7 +20,6 @@ public class FDCX
         users = new ArrayList<>();
         admins = new ArrayList<>();
         transactionLogs = new ArrayList<>();
-        fraudMonitor = new FraudMonitor();
         stockManager = new StockManager();
         nadra = new NADRA();
         fbr = new FBR();
@@ -43,7 +44,7 @@ public class FDCX
     // Verify a user
     public void verifyUser(String username) 
     {
-        // TODO
+        // TODO via NADRA DB
     }
 
     // List all users

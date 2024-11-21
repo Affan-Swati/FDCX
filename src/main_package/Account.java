@@ -4,6 +4,7 @@ import java.util.*;
 public class Account 
 {
     private List<Stock> stocks = new ArrayList<>();
+    private List<Currency> currencies = new ArrayList<>();
     private String transactionHistory;
     private Wallet wallet;
     private Subscription subscription;
@@ -13,7 +14,9 @@ public class Account
     public Account()
     {
     	 this.wallet = new Wallet();
-    	 subscription = new Subscription();
+    	 this.subscription = new Subscription();
+    	 this.stocks = new ArrayList<>();
+    	 this.currencies = new ArrayList<>();
     	 this.loyaltyPoints = 0;
     	 
     }

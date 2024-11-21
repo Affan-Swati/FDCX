@@ -17,12 +17,12 @@ public class TransactionLog
     // Getter for Date and Time
     public String getTransactionDate() 
     {
-        return DateTime.getCurrentDate(); // Use DateTime class for the current date
+        return dateTime.getCurrentDate(); // Use DateTime class for the current date
     }
 
     public String getTransactionTime() 
     {
-        return DateTime.getCurrentTime(); // Use DateTime class for the current time
+        return dateTime.getCurrentTime(); // Use DateTime class for the current time
     }
 
     // Getter for user

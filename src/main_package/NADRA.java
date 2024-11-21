@@ -13,7 +13,7 @@ public class NADRA
     }
 
     // Authenticate user based on CNIC and Name
-    public boolean authenticateUser(String cnic, String name) 
+    public boolean verifyUser(String cnic, String name) 
     {
     	return true;
         // TODO

@@ -1,20 +1,40 @@
 package main_package;
+import java.time.*;
 
 public class Subscription 
 {
     private String name;
-    private String type; // monthly , quarterly , yearly
+    private String type; // monthly , quarterly , yearly, cancelled
     private float price;
-    private DateTime renewalDate;
+    private LocalDate renewalDate;
+    private DateTime dateTime;
 
+    
+    public void subscribe(String type)
+    {
+    	this.type = type;
+    	this.renewSubscription();
+    }
+    
     public void renewSubscription() 
     {
-        // Logic for renewing subscription
+        if(this.type == "monthly")
+        {
+        	renewalDate = dateTime.getDateAfterMonths(1);
+        }
+        
+        else if (this.type == "quarterly")
+        {
+        	renewalDate = dateTime.getDateAfterMonths(3);
+        }
+        
+        else if(this.type == "yearly")
+        	renewalDate = dateTime.getDateAfterMonths(12);
     }
 
     public void cancelSubscription() 
     {
-        // Logic for canceling subscription
+        
     }
 
     public void changeSubscription(String newType) 

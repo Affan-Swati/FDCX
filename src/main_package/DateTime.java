@@ -11,30 +11,30 @@ public class DateTime
     	
     }
 
-    public static String getCurrentDate() 
+    public String getCurrentDate() 
     {
         return LocalDateTime.now().toLocalDate().toString(); // Format: yyyy-MM-dd
     }
 
-    public static String getCurrentTime() 
+    public String getCurrentTime() 
     {
         return LocalDateTime.now().toLocalTime().toString(); // Format: HH:mm:ss
     }
     
 
-    public static String getDateAfterDays(int days) 
+    public LocalDate getDateAfterDays(int days) 
     {
-        return LocalDate.now().plusDays(days).toString(); // Adds 'days' to the current date
+        return LocalDate.now().plusDays(days); // Adds 'days' to the current date
     }
 
-    public static String getDateAfterWeeks(int weeks) 
+    public LocalDate getDateAfterWeeks(int weeks) 
     {
-        return LocalDate.now().plusWeeks(weeks).toString(); // Adds 'weeks' to the current date
+        return LocalDate.now().plusWeeks(weeks); // Adds 'weeks' to the current date
     }
 
-    public static String getDateAfterMonths(int months) 
+    public LocalDate getDateAfterMonths(int months) 
     {
-        return LocalDate.now().plusMonths(months).toString(); // Adds 'months' to the current date
+        return LocalDate.now().plusMonths(months); // Adds 'months' to the current date
     }
 
     public String toString() 

@@ -1,21 +1,72 @@
 package main_package;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.sql.*;
+
 
 public class NADRA 
 {
-   private String connectionString;
+	private static final String connectionString = "jdbc:mysql://localhost:3306/NADRA"; // Database URL
+    private static final String USER = "root"; // Database username
+    private static final String PASSWORD = "Affan@2004"; // Database password
 
     public NADRA() 
     {
-        // TODO
+    
     }
-
-    // Authenticate user based on CNIC and Name
+    
     public boolean verifyUser(String cnic, String name) 
     {
-    	return true;
-        // TODO
+        try (Connection conn = DriverManager.getConnection(connectionString, USER, PASSWORD)) 
+        {
+            // Step 1: Check if the user exists
+            try (PreparedStatement userExistsStmt = conn.prepareStatement("SELECT * FROM CitizenInformation WHERE CNIC = ?")) {
+                userExistsStmt.setString(1, cnic);
+                ResultSet userExistsRs = userExistsStmt.executeQuery();
+
+                if (!userExistsRs.next()) {
+                    System.out.println("User with CNIC " + cnic + " does not exist.");
+                    return false;
+                }
+            }
+
+            // Step 2: Check if the name matches
+            try (PreparedStatement nameMatchStmt = conn.prepareStatement("SELECT * FROM CitizenInformation WHERE CNIC = ? AND Name = ?")) 
+            {
+                nameMatchStmt.setString(1, cnic);
+                nameMatchStmt.setString(2, name);
+                ResultSet nameMatchRs = nameMatchStmt.executeQuery();
+
+                if (!nameMatchRs.next()) {
+                    System.out.println("Name does not match for the CNIC " + cnic + ".");
+                    return false;
+                }
+            }
+
+            // Step 3: Check if the age is 18 or older
+            try (PreparedStatement ageCheckStmt = conn.prepareStatement(
+                    "SELECT TIMESTAMPDIFF(YEAR, DateOfBirth, CURDATE()) AS Age FROM CitizenInformation WHERE CNIC = ?")) 
+            {
+                ageCheckStmt.setString(1, cnic);
+                ResultSet ageCheckRs = ageCheckStmt.executeQuery();
+
+                if (ageCheckRs.next()) {
+                    int age = ageCheckRs.getInt("Age");
+                    if (age < 18) {
+                        System.out.println("User with CNIC " + cnic + " is under 18 years old.");
+                        return false;
+                    }
+                }
+            }
+
+            // All checks passed
+            return true;
+
+        } catch (SQLException e) 
+        {
+            e.printStackTrace();
+        }
+
+        return false;
     }
+
 }

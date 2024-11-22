@@ -1,6 +1,7 @@
 package main_package;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map
 import java.time.*;
 
 
@@ -11,9 +12,8 @@ public class FDCX
     private List<TransactionLog> transactionLogs;
     private DBHandler dbHandler;
     private StockManager stockManager;
-    private CurrencyManager currencyManager;
-    private BankingService bankingServices;
-    private CryptoService cryptoServices;
+    private BankingService bankingService;
+    private CryptoService cryptoService;
     private NADRA nadra; 
     private FBR fbr;
 
@@ -26,9 +26,11 @@ public class FDCX
         nadra = new NADRA();
         fbr = new FBR();
         dbHandler = DBHandler.getInstance();
+        bankingService = new BankingService();
+        cryptoService = new CryptoService();
     }
 
-    // Register a new user
+    // USE CASE : REGISTER USER
     public void registerUser(String name,String email,String CNIC,String phoneNumber , LocalDate DOB) 
     {
         User user = new User(name,email,CNIC ,phoneNumber,DOB);
@@ -83,6 +85,19 @@ public class FDCX
         	return false;
         }
     }
+    
+    // USE CASE : VIEW EXCHNAGE RATE 
+    public Map <String,Double> viewFiatExchangeRates()
+    {
+    	return bankingService.getFiatExchangeRates();
+    }
+    
+ // USE CASE : VIEW EXCHNAGE RATE 
+    public Map <String,Double> viewCryptoExchangeRates()
+    {
+    	return cryptoService.getCryptoExchangeRates();
+    }
+ 
 
     // List all users
     public void listUsers() 

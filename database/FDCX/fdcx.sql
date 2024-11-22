@@ -50,7 +50,8 @@ CREATE TABLE Stocks (
     Available BOOLEAN DEFAULT TRUE               -- Whether the stock is available
 );
 
-CREATE TABLE Currencies (
+CREATE TABLE Currencies 
+(
     CurrencyID INT AUTO_INCREMENT PRIMARY KEY,   -- Unique ID for each currency
     CurrencyName VARCHAR(100) NOT NULL,          -- Name of the currency (e.g., US Dollar, Bitcoin)
     CurrencyCode VARCHAR(10) NOT NULL UNIQUE,    -- Code for the currency (e.g., USD, BTC)
@@ -65,16 +66,8 @@ CREATE TABLE Wallets (
     FOREIGN KEY (UserID) REFERENCES Users(UserID) -- Link to Users table
 );
 
-CREATE TABLE WalletCurrencyBalances (
-    WalletID VARCHAR(50) NOT NULL,              -- Foreign key to Wallets table
-    CurrencyCode VARCHAR(10) NOT NULL,          -- Foreign key to Currencies table
-    Balance DECIMAL(10, 2) DEFAULT 0,           -- Balance of the currency
-    PRIMARY KEY (WalletID, CurrencyCode),       -- Composite primary key
-    FOREIGN KEY (WalletID) REFERENCES Wallets(WalletID), -- Link to Wallets table
-    FOREIGN KEY (CurrencyCode) REFERENCES SystemCurrencies(CurrencyCode) -- Link to SystemCurrencies table
-);
-
-CREATE TABLE Subscriptions (
+CREATE TABLE Subscriptions 
+(
     SubscriptionID INT AUTO_INCREMENT PRIMARY KEY, -- Unique ID for each subscription
     Name VARCHAR(100) NOT NULL,                    -- Subscription name (e.g., Basic, Premium)
     Type ENUM('monthly', 'quarterly', 'yearly', 'cancelled') NOT NULL, -- Type of subscription
@@ -83,7 +76,8 @@ CREATE TABLE Subscriptions (
 );
 
 -- For stocks
-CREATE TABLE UserStocks (
+CREATE TABLE UserStocks 
+(
     UserID INT,                                   -- Foreign key to Users table
     StockID INT,                                  -- Foreign key to Stocks table
     Quantity DECIMAL(10, 2) NOT NULL,             -- Quantity of the stock owned
@@ -93,7 +87,8 @@ CREATE TABLE UserStocks (
 );
 
 -- For currencies
-CREATE TABLE UserCurrencies (
+CREATE TABLE UserCurrencies 
+(
     UserID INT,                                   -- Foreign key to Users table
     CurrencyID INT,                               -- Foreign key to Currencies table
     Amount DECIMAL(10, 2) NOT NULL,               -- Amount of the currency owned

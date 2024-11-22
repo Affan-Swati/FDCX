@@ -1,40 +1,74 @@
 package main_package;
 
+import java.util.Map;
+
 public class BankingService 
 {
+
+	DBHandler dbHandler = null;
+	CurrencyManager currencyManager = null;
 	
 	public BankingService ()
 	{
-		
+		dbHandler = DBHandler.getInstance();
+		currencyManager = CurrencyManager.getInstance();
 	}
-	 // Deposit funds into a bank account
-	 void deposit(String accountNumber, double amount)
+	
+	public Map<String, Double> getFiatExchangeRates() 
+	{ 
+	    return dbHandler.getFiatExchangeRates();
+	}
+	
+	public boolean buyFiat(User user, String currencyCode ,double amount)
 	 {
-		 
+		 if(dbHandler.buyFiat(user.getCNIC(), currencyCode, amount))
+		 {
+			 currencyManager.addCurrencyToWallet(user.getAccount().getWallet(), currencyCode, amount);
+			 return true;
+		 }
+		 else
+		 {
+			 System.out.println("INSUFFICIENT SYSTEM BALANCE!");
+			 return false;
+		 }
 	 }
 	
-	 // Withdraw funds from a bank account
-	 boolean withdraw(String accountNumber, double amount)
-	 {
-		 return true;
-	 }
+	public boolean sellFiat(User user, String currencyCode, double amount)
+	{
+		 if(dbHandler.sellFiat(user.getCNIC(), currencyCode, amount))
+		 {
+			 currencyManager.removeCurrencyFromWallet(user.getAccount().getWallet(), currencyCode, amount);
+			 return true;
+		 }
+		 else
+		 {
+			 System.out.println("INSUFFICIENT USER BALANCE!");
+			 return false;
+		 }
+			 
+	}
 	
-	 // Transfer funds between accounts
-	 boolean transfer(String fromAccountNumber, String toAccountNumber, double amount)
+	public boolean transferFiat(User fromUser, User toUser, String currencyCode,double amount)
 	 {
-		 return true;
-	 }
-	
-	 // Check the balance of a bank account
-	 double checkBalance(String accountNumber)
-	 {
-		return 2.0; 
-	 }
-	
-	 // View transaction history for an account
-	 void viewTransactionHistory(String accountNumber)
-	 {
-		 
+		Wallet fromWallet =  fromUser.getAccount().getWallet() ;
+		Wallet toWallet = toUser.getAccount().getWallet();
+		
+		if(fromWallet.getCurrencyBalance(currencyCode) < amount)
+		{
+			System.out.println("INSUFFICIENT BALANCE!");
+			return false;
+		}
+		
+		else
+		{
+			fromWallet.removeCurrency(currencyCode, amount);
+			toWallet.addCurrency(currencyCode, amount);
+			
+			dbHandler.updateUserBalance(fromUser.getCNIC(), currencyCode, amount, false);
+			dbHandler.updateUserBalance(toUser.getCNIC(), currencyCode, amount, true);
+			
+			return true;
+		}
 	 }
 }
 

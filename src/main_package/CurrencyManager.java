@@ -2,13 +2,23 @@ package main_package;
 
 import java.util.*;
 
-public class CurrencyManager 
+public class CurrencyManager // singleton
 {
+	private static CurrencyManager instance = null;
     private List<Currency> currencyList; // List of currencies in the system
 
     // Constructor
-    public CurrencyManager() {
+    private CurrencyManager() 
+    {
         this.currencyList = new ArrayList<>();
+    }
+    
+    public static CurrencyManager getInstance()
+    {
+    	if(instance == null)
+    		instance = new CurrencyManager();
+    	
+    	return instance;
     }
 
     // Add a new currency to the system
@@ -91,4 +101,12 @@ public class CurrencyManager
             System.out.println(c);
         }
     }
+
+	public List<Currency> getCurrencyList() {
+		return currencyList;
+	}
+
+	public void setCurrencyList(List<Currency> currencyList) {
+		this.currencyList = currencyList;
+	}
 }

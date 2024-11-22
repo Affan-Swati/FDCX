@@ -107,4 +107,9 @@ public class FBR {
             e.printStackTrace();
         }
     }
+
+	public static double getDefaultTax() 
+	{
+		return DEFAULT_TAX;
+	}
 }

@@ -35,9 +35,12 @@ public class StockManager
     	//TODO
     }
     
-    public void viewUserStocks(User user) 
-    {
-    	//TODO
-    }
+	public List<Stock> getStockList() {
+		return stockList;
+	}
+
+	public void setStockList(List<Stock> stockList) {
+		this.stockList = stockList;
+	}
     
 }

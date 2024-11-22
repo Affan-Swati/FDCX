@@ -3,32 +3,58 @@ import java.util.*;
 
 public class Account 
 {
-    private List<Stock> stocks = new ArrayList<>();
-    private List<Currency> currencies = new ArrayList<>();
-    private String transactionHistory;
+	private String type; // "admin" , "user"
+    private List<Stock> stocks;
+    private List<Currency> currencies ;
     private Wallet wallet;
     private Subscription subscription;
     private int loyaltyPoints;
+    private String username;
+    private String password;
     
     
-    public Account()
+    public Account(String username , String password , String type)
     {
-    	 this.wallet = new Wallet();
-    	 this.subscription = new Subscription();
-    	 this.stocks = new ArrayList<>();
-    	 this.currencies = new ArrayList<>();
-    	 this.loyaltyPoints = 0;
+    	 if(type == "user")
+    	 {
+    		 this.wallet = new Wallet();
+        	 this.subscription = new Subscription();
+        	 this.stocks = new ArrayList<>();
+        	 this.currencies = new ArrayList<>();
+        	 this.loyaltyPoints = 0;
+    	 }
     	 
+    	 else
+    	 {
+    		 this.wallet = null;
+        	 this.subscription = null;
+        	 this.stocks = null;
+        	 this.currencies = null;
+        	 this.loyaltyPoints = -1;
+    	 }
+    	 
+    	 this.type = type;
+    	 this.username = username;
+    	 this.password = password;
     }
     
-    public Wallet getWallet() 
+    public String getTransactionHistory()
+    {
+    	// TODO: use DB to get transaction logs for the user
+    	return "";
+    }
+    
+    public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public Wallet getWallet() 
     {
         return wallet;
-    }
-
-    public String getTransactionHistory() 
-    {
-        return transactionHistory;
     }
 
     public void claimLoyaltyPoints(int points) 
@@ -40,5 +66,62 @@ public class Account
     {
         return loyaltyPoints;
     }
+
+	public List<Stock> getStocks() {
+		return stocks;
+	}
+
+	public void setStocks(List<Stock> stocks) 
+	{
+		this.stocks = stocks;
+	}
+
+	public List<Currency> getCurrencies() {
+		return currencies;
+	}
+
+	public void setCurrencies(List<Currency> currencies) 
+	{
+		this.currencies = currencies;
+	}
+
+	public Subscription getSubscription() {
+		return subscription;
+	}
+
+	public void setSubscription(Subscription subscription) 
+	{
+		this.subscription = subscription;
+	}
+
+	public void setWallet(Wallet wallet) 
+	{
+		this.wallet = wallet;
+	}
+
+	public void setLoyaltyPoints(int loyaltyPoints) 
+	{
+		this.loyaltyPoints = loyaltyPoints;
+	}
+
+	public String getUsername() 
+	{
+		return username;
+	}
+
+	public void setUsername(String username) 
+	{
+		this.username = username;
+	}
+
+	public String getPassword() 
+	{
+		return password;
+	}
+
+	public void setPassword(String password) 
+	{
+		this.password = password;
+	}
 	
 }

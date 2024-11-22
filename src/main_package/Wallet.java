@@ -74,4 +74,16 @@ public class Wallet
             }
         }
     }
+
+	public Map<String, Double> getCurrencyBalances() {
+		return currencyBalances;
+	}
+
+	public void setCurrencyBalances(Map<String, Double> currencyBalances) {
+		this.currencyBalances = currencyBalances;
+	}
+
+	public void setWalletID(String walletID) {
+		this.walletID = walletID;
+	}
 }

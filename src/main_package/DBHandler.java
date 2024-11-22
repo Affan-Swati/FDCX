@@ -1,157 +1,180 @@
-//package main_package;
-//
-//import java.sql.*;
-//import java.util.*;
-//
-//public class DBHandler 
-//{
-//
-//    private static final String URL = "jdbc:mysql://localhost:3306/your_db_name"; // Change to your database URL
-//    private static final String USER = "root"; // Your database username
-//    private static final String PASSWORD = "password"; // Your database password
-//    private Connection connection;
-//
-//    // Constructor to initialize DB connection
-//    public DBHandler() 
-//    {
-//        try 
-//        {
-//            connection = DriverManager.getConnection(URL, USER, PASSWORD);
-//            System.out.println("Database connected successfully.");
-//        } 
-//        catch (SQLException e) 
-//        {
-//            System.out.println("Database connection failed: " + e.getMessage());
-//        }
-//    }
-//
-//    // Add a user to the database
-//    public void addUser(User user)
-//    {
-//        String query = "INSERT INTO users (user_id, user_name, email, password) VALUES (?, ?, ?, ?)";
-//        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-//            stmt.setString(1, user.getUserID());
-//            stmt.setString(2, user.getUserName());
-//            stmt.setString(3, user.getEmail());
-//            stmt.setString(4, user.getPassword());
-//            stmt.executeUpdate();
-//            System.out.println("User added successfully.");
-//        } catch (SQLException e) {
-//            System.out.println("Error adding user: " + e.getMessage());
-//        }
-//    }
-//
-//    // Add an admin to the database
-//    public void addAdmin(Admin admin) {
-//        String query = "INSERT INTO admins (admin_id, admin_name, email, password) VALUES (?, ?, ?, ?)";
-//        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-//            stmt.setString(1, admin.getAdminID());
-//            stmt.setString(2, admin.getAdminName());
-//            stmt.setString(3, admin.getEmail());
-//            stmt.setString(4, admin.getPassword());
-//            stmt.executeUpdate();
-//            System.out.println("Admin added successfully.");
-//        } catch (SQLException e) {
-//            System.out.println("Error adding admin: " + e.getMessage());
-//        }
-//    }
-//
-//    // Add a stock to the database
-//    public void addStock(Stock stock) {
-//        String query = "INSERT INTO stocks (stock_id, stock_name, quantity_available) VALUES (?, ?, ?)";
-//        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-//            stmt.setString(1, stock.getStockID());
-//            stmt.setString(2, stock.getStockName());
-//            stmt.setInt(3, stock.getQuantityAvailable());
-//            stmt.executeUpdate();
-//            System.out.println("Stock added successfully.");
-//        } catch (SQLException e) {
-//            System.out.println("Error adding stock: " + e.getMessage());
-//        }
-//    }
-//
-//    // Log a transaction in the database
-//    public void addTransactionLog(TransactionLog log) {
-//        String query = "INSERT INTO transaction_logs (user_id, action) VALUES (?, ?)";
-//        try (PreparedStatement stmt = connection.prepareStatement(query)) {
-//            stmt.setString(1, log.getUser().getUserID());
-//            stmt.setString(2, log.getDetails());
-//            stmt.executeUpdate();
-//            System.out.println("Transaction logged successfully.");
-//        } catch (SQLException e) {
-//            System.out.println("Error logging transaction: " + e.getMessage());
-//        }
-//    }
-//
-//    // Get a list of users from the database
-//    public List<User> getUsers() {
-//        List<User> users = new ArrayList<>();
-//        String query = "SELECT * FROM users";
-//        try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
-//            while (rs.next()) {
-//                String userID = rs.getString("user_id");
-//                String userName = rs.getString("user_name");
-//                String email = rs.getString("email");
-//                String password = rs.getString("password");
-//                users.add(new User(userID, userName, email, password));
-//            }
-//        } catch (SQLException e) {
-//            System.out.println("Error retrieving users: " + e.getMessage());
-//        }
-//        return users;
-//    }
-//
-//    // Get a list of admins from the database
-//    public List<Admin> getAdmins() {
-//        List<Admin> admins = new ArrayList<>();
-//        String query = "SELECT * FROM admins";
-//        try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
-//            while (rs.next()) {
-//                String adminID = rs.getString("admin_id");
-//                String adminName = rs.getString("admin_name");
-//                String email = rs.getString("email");
-//                String password = rs.getString("password");
-//                admins.add(new Admin(adminID, adminName, email, password));
-//            }
-//        } catch (SQLException e) {
-//            System.out.println("Error retrieving admins: " + e.getMessage());
-//        }
-//        return admins;
-//    }
-//
-//    // Get a list of stocks from the database
-//    public List<Stock> getStocks() 
-//    {
-//        List<Stock> stocks = new ArrayList<>();
-//        String query = "SELECT * FROM stocks";
-//        try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
-//            while (rs.next()) {
-//                String stockID = rs.getString("stock_id");
-//                String stockName = rs.getString("stock_name");
-//                int quantityAvailable = rs.getInt("quantity_available");
-//                stocks.add(new Stock(stockID, stockName, quantityAvailable));
-//            }
-//        } catch (SQLException e) {
-//            System.out.println("Error retrieving stocks: " + e.getMessage());
-//        }
-//        return stocks;
-//    }
-//
-//    // Close the database connection
-//    public void closeConnection() 
-//    {
-//        try 
-//        {
-//            if (connection != null) 
-//            {
-//                connection.close();
-//                System.out.println("Database connection closed.");
-//            }
-//        } 
-//        catch (SQLException e) 
-//        {
-//            System.out.println("Error closing connection: " + e.getMessage());
-//        }
-//    }
-//}
-//
+package main_package;
+
+import java.sql.*;
+import java.time.LocalDate;
+import java.util.*;
+
+public class DBHandler // singleton 
+{
+    private static final String DB_URL = "jdbc:mysql://localhost:3306/FDCX";
+    private static final String USER = "root";
+    private static final String PASSWORD = "Affan@2004";
+    private static DBHandler instance = null;
+
+    private DBHandler() 
+    {
+  
+    }
+    
+    public static DBHandler getInstance()
+    {
+    	if(instance == null)
+    	{
+    		instance = new DBHandler();
+    	}
+    	return instance;
+    }
+
+    // 1. Register a new user (without account creation)
+    public boolean registerUser(String name, String cnic, LocalDate dob, String email, String phoneNumber) 
+    {
+        String insertUser = "INSERT INTO Users (Name, CNIC, DOB, Email, PhoneNumber, JoinDate, IsVerified) VALUES (?, ?, ?, ?, ?, CURDATE(), FALSE)";
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(insertUser, Statement.RETURN_GENERATED_KEYS)) {
+
+            stmt.setString(1, name);
+            stmt.setString(2, cnic);
+            stmt.setDate(3, java.sql.Date.valueOf(dob));  // Convert LocalDate to sql.Date
+            stmt.setString(4, email);
+            stmt.setString(5, phoneNumber);
+            stmt.executeUpdate();
+
+            ResultSet rs = stmt.getGeneratedKeys();
+            if (rs.next()) {
+                return true; // User successfully registered
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    
+    public void setUserVerification(String CNIC, boolean status) 
+    {
+    	  String updateVerification = "UPDATE Users SET IsVerified = ? WHERE CNIC = ?";
+    	  try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
+    	       PreparedStatement stmt = conn.prepareStatement(updateVerification)) 
+    	  {
+    	    stmt.setBoolean(1, status);
+    	    stmt.setString(2, CNIC);
+    	    stmt.executeUpdate();
+    	  } catch (SQLException e) {
+    	    e.printStackTrace();
+    	  }
+    }
+
+    // 2. Register an admin (without account creation)
+    public boolean registerAdmin(String name, String cnic, LocalDate dob, String email, String phoneNumber) {
+        String insertAdmin = "INSERT INTO Users (Name, CNIC, DOB, Email, PhoneNumber, JoinDate, IsVerified) VALUES (?, ?, ?, ?, ?, CURDATE(), FALSE)";
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(insertAdmin, Statement.RETURN_GENERATED_KEYS)) {
+
+            stmt.setString(1, name);
+            stmt.setString(2, cnic);
+            stmt.setDate(3, java.sql.Date.valueOf(dob));
+            stmt.setString(4, email);
+            stmt.setString(5, phoneNumber);
+            stmt.executeUpdate();
+
+            ResultSet rs = stmt.getGeneratedKeys();
+            if (rs.next()) {
+                return true; // Admin successfully registered
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // 3. Create an account for a user
+    public boolean createUserAccount(String userID, String username, String password) {
+        String insertAccount = "INSERT INTO Accounts (Username, Password, Type, UserID) VALUES (?, ?, 'user', ?)";
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(insertAccount)) {
+
+            stmt.setString(1, username);
+            stmt.setString(2, password);
+            stmt.setString(3, userID);
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // 4. Create an account for an admin
+    public boolean createAdminAccount(String adminID, String username, String password) {
+        String insertAccount = "INSERT INTO Accounts (Username, Password, Type, UserID) VALUES (?, ?, 'admin', ?)";
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(insertAccount)) {
+
+            stmt.setString(1, username);
+            stmt.setString(2, password);
+            stmt.setString(3, adminID);
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // 5. Retrieve exchange rates
+    public Map<String, Double> getExchangeRates() 
+    {
+        String query = "SELECT CurrencyCode, RateAgainstUSD FROM SystemCurrencies WHERE Available = TRUE";
+        Map<String, Double> exchangeRates = new HashMap<>();
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                exchangeRates.put(rs.getString("CurrencyCode"), rs.getDouble("RateAgainstUSD"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return exchangeRates;
+    }
+
+    // 6. Deposit funds into the user's wallet
+    public boolean depositFunds(String walletID, String currencyCode, double amount) 
+    {
+        String query = "INSERT INTO WalletCurrencyBalances (WalletID, CurrencyCode, Balance) " +
+                       "VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE Balance = Balance + ?";
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, walletID);
+            stmt.setString(2, currencyCode);
+            stmt.setDouble(3, amount);
+            stmt.setDouble(4, amount);
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    // 7. Withdraw funds from the user's wallet
+    public boolean withdrawFunds(String walletID, String currencyCode, double amount) 
+    {
+        String query = "UPDATE WalletCurrencyBalances SET Balance = Balance - ? " +
+                       "WHERE WalletID = ? AND CurrencyCode = ? AND Balance >= ?";
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setDouble(1, amount);
+            stmt.setString(2, walletID);
+            stmt.setString(3, currencyCode);
+            stmt.setDouble(4, amount);
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+}

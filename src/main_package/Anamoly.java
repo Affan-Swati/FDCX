@@ -54,9 +54,8 @@ public class Anamoly
         System.out.println("Anamoly resolved.");
     }
 
-    // Display details of the anomaly
-    @Override
-    public String toString() {
+    public String toString() 
+    {
         return "Anamoly{" +
                 "dateTime=" + dateTime +
                 ", isResolved=" + isResolved +
@@ -64,13 +63,21 @@ public class Anamoly
                 ", assignedAdmin=" + (assignedAdmin != null ? assignedAdmin.getName() : "None") +
                 '}';
     }
+
+	public void setDateTime(LocalDateTime dateTime) {
+		this.dateTime = dateTime;
+	}
+
+	public void setResolved(boolean isResolved) {
+		this.isResolved = isResolved;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public void setAssignedAdmin(Admin assignedAdmin) {
+		this.assignedAdmin = assignedAdmin;
+	}
 }
 
-//class FraudMonitor {
-//    private Queue<Anamoly> anamolies = new LinkedList<>();
-//    private boolean isActive;
-//
-//    public void startMonitoring() {
-//        isActive = true;
-//    }
-//}

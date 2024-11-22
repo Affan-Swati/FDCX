@@ -7,8 +7,6 @@ public class Subscription
     private String type; // monthly , quarterly , yearly, cancelled
     private float price;
     private LocalDate renewalDate;
-    private DateTime dateTime;
-
     
     public void subscribe(String type)
     {
@@ -20,25 +18,58 @@ public class Subscription
     {
         if(this.type == "monthly")
         {
-        	renewalDate = dateTime.getDateAfterMonths(1);
+        	renewalDate = DateTime.getDateAfterMonths(1);
         }
         
         else if (this.type == "quarterly")
         {
-        	renewalDate = dateTime.getDateAfterMonths(3);
+        	renewalDate = DateTime.getDateAfterMonths(3);
         }
         
         else if(this.type == "yearly")
-        	renewalDate = dateTime.getDateAfterMonths(12);
+        	renewalDate = DateTime.getDateAfterMonths(12);
     }
 
     public void cancelSubscription() 
     {
-        
+        // TODO:
     }
 
     public void changeSubscription(String newType) 
     {
         this.type = newType;
     }
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public float getPrice() {
+		return price;
+	}
+
+	public void setPrice(float price) {
+		this.price = price;
+	}
+
+	public LocalDate getRenewalDate() {
+		return renewalDate;
+	}
+
+	public void setRenewalDate(LocalDate renewalDate) {
+		this.renewalDate = renewalDate;
+	}
+
 }

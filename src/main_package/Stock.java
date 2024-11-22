@@ -4,7 +4,6 @@ public class Stock
 {
     private String name;
     private float unitPrice;
-    private DateTime dateTime;
     private String purchase_time;
     private boolean available;
 
@@ -12,13 +11,12 @@ public class Stock
     {
         this.name = name;
         this.unitPrice = unitPrice;
-        this.dateTime = new DateTime();
         this.available = true;
     }
 
     public void purchaseStock()
     {
-        this.purchase_time = dateTime.toString();
+        this.purchase_time = DateTime.getCurrentDate() + DateTime.getCurrentTime();
         this.available = false;
     }
     
@@ -26,4 +24,37 @@ public class Stock
     {
         // Predict stock trends
     }
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public float getUnitPrice() {
+		return unitPrice;
+	}
+
+	public void setUnitPrice(float unitPrice) {
+		this.unitPrice = unitPrice;
+	}
+
+
+	public String getPurchase_time() {
+		return purchase_time;
+	}
+
+	public void setPurchase_time(String purchase_time) {
+		this.purchase_time = purchase_time;
+	}
+
+	public boolean isAvailable() {
+		return available;
+	}
+
+	public void setAvailable(boolean available) {
+		this.available = available;
+	}
 }

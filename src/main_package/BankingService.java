@@ -1,10 +1,7 @@
 package main_package;
-import java.util.ArrayList;
-import java.util.List;
 
 public class BankingService 
 {
-
 	
 	public BankingService ()
 	{

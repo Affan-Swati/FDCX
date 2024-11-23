@@ -213,7 +213,7 @@ public class DBHandler // singleton
         return false;
     }
 
-    public void updateUserBalance(String userId, String currencyCode, double amount, boolean isIncrease) 
+    public void updateUserBalance(String userId,String currencyName , String currencyCode , double rateAgainstUSD, double amount, String type ,boolean isIncrease)
     {
         // Try updating the existing record first
         String updateQuery = "UPDATE UserCurrencies SET Amount = Amount " + (isIncrease ? "+" : "-") + " ? WHERE UserID = ? AND CurrencyCode = ?";
@@ -228,11 +228,14 @@ public class DBHandler // singleton
 
             // If no rows were affected, insert the new balance entry
             if (rowsAffected == 0) {
-                String insertQuery = "INSERT INTO UserCurrencies (UserID, CurrencyCode, Amount) VALUES (?, ?, ?)";
+                String insertQuery = "INSERT INTO UserCurrencies(UserID, CurrencyName, CurrencyCode,RateAgainstUSD,Amount, type) VALUES (?,?,?,?,?,?)";
                 try (PreparedStatement insertStmt = conn.prepareStatement(insertQuery)) {
                     insertStmt.setString(1, userId);
-                    insertStmt.setString(2, currencyCode);
-                    insertStmt.setDouble(3, amount);
+                    insertStmt.setString(2, currencyName);
+                    insertStmt.setString(3, currencyCode);
+                    insertStmt.setDouble(4, rateAgainstUSD);
+                    insertStmt.setDouble(5,amount);
+                    insertStmt.setString(6,type);
                     insertStmt.executeUpdate();
                 }
             }
@@ -243,7 +246,7 @@ public class DBHandler // singleton
     }
 
 
-    public void updateSystemBalance(String currencyCode, double amount, boolean isIncrease) 
+    public void updateSystemBalance(String currencyName , String currencyCode , double rateAgainstUSD, double amount, String type ,boolean isIncrease) 
     {
         // Try updating the existing record first
         String updateQuery = "UPDATE SystemCurrencies SET Amount = Amount " + (isIncrease ? "+" : "-") + " ? WHERE CurrencyCode = ?";
@@ -258,10 +261,13 @@ public class DBHandler // singleton
             // If no rows were affected, insert the new system balance entry
             if (rowsAffected == 0) 
             {
-                String insertQuery = "INSERT INTO SystemCurrencies (CurrencyCode, Amount) VALUES (?, ?)";
+                String insertQuery = "INSERT INTO SystemCurrencies (CurrencyName , CurrencyCode , RateAgainstUSD, Amount, Type) VALUES (?,?,?,?,?)";
                 try (PreparedStatement insertStmt = conn.prepareStatement(insertQuery)) {
-                    insertStmt.setString(1, currencyCode);
-                    insertStmt.setDouble(2, amount);
+                    insertStmt.setString(1, currencyName);
+                    insertStmt.setString(2, currencyCode);
+                    insertStmt.setDouble(3, rateAgainstUSD);
+                    insertStmt.setDouble(4, amount);
+                    insertStmt.setString(5, type);
                     insertStmt.executeUpdate();
                 }
             }
@@ -321,10 +327,11 @@ public class DBHandler // singleton
         return transactionHistory;
     }
 
-    public boolean buyCrypto(String userId, String cryptoCode, double amount) {
+    public boolean buyCrypto(String userId , String cryptoName , String cryptoCode , double rateAgainstUSD, double amount) 
+    {
         if (isSufficientSystemBalance(cryptoCode, amount)) {
-            updateUserBalance(userId, cryptoCode, amount, true);
-            updateSystemBalance(cryptoCode, amount, false);
+            updateUserBalance(userId, cryptoName, cryptoCode, rateAgainstUSD , amount, "Crypto", true);
+            updateSystemBalance(cryptoName, cryptoCode, rateAgainstUSD , amount, "Crypto", false);
             recordTransaction(userId, cryptoCode, amount, "Buy Crypto");
             return true;
         } else {
@@ -332,13 +339,14 @@ public class DBHandler // singleton
         }
     }
 
-    public boolean sellCrypto(String userId, String cryptoCode, double amount) {
+    public boolean sellCrypto(String userId , String cryptoName , String cryptoCode , double rateAgainstUSD, double amount) 
+    {
         // Check user's balance
         if (isUserBalanceSufficient(userId, cryptoCode, amount)) 
         {
             if (isSufficientSystemBalance(cryptoCode, amount)) {
-                updateUserBalance(userId, cryptoCode, amount, false);
-                updateSystemBalance(cryptoCode, amount, true);
+            	updateUserBalance(userId, cryptoName, cryptoCode, rateAgainstUSD , amount, "Crypto", false);
+                updateSystemBalance(cryptoName, cryptoCode, rateAgainstUSD , amount, "Crypto", true);
                 recordTransaction(userId, cryptoCode, amount, "Sell Crypto");
                 return true;
             } else {
@@ -349,11 +357,11 @@ public class DBHandler // singleton
         }
     }
 
-    public boolean buyFiat(String userId, String currencyCode, double amount) 
+    public boolean buyFiat(String userId , String currencyName , String currencyCode , double rateAgainstUSD, double amount) 
     {
     	if (isSufficientSystemBalance(currencyCode, amount)) {
-            updateUserBalance(userId, currencyCode, amount, true);
-            updateSystemBalance(currencyCode, amount, false);
+    		updateUserBalance(userId, currencyName, currencyCode, rateAgainstUSD , amount, "Fiat", true);
+            updateSystemBalance(currencyName, currencyCode, rateAgainstUSD , amount, "Fiat", false);
             recordTransaction(userId, currencyCode, amount, "Buy Fiat");
             return true;
         } else {
@@ -361,12 +369,12 @@ public class DBHandler // singleton
         }
     }
 
-    public boolean sellFiat(String userId, String currencyCode, double amount) 
+    public boolean sellFiat(String userId , String currencyName , String currencyCode , double rateAgainstUSD, double amount) 
     {
         if (isUserBalanceSufficient(userId, currencyCode, amount)) 
         {
-            updateUserBalance(userId, currencyCode, amount, false);
-            updateSystemBalance(currencyCode, amount, true);
+        	updateUserBalance(userId, currencyName, currencyCode, rateAgainstUSD , amount, "Fiat", false);
+            updateSystemBalance(currencyName, currencyCode, rateAgainstUSD , amount, "Fiat", true);
             recordTransaction(userId, currencyCode, amount, "Sell Fiat");
             return true;
         } else 
@@ -536,7 +544,7 @@ public class DBHandler // singleton
     // Helper Method: Check if the user has sufficient stock
     private boolean isSufficientUserStock(String userId, String stockName, int quantity) 
     {
-        String query = "SELECT Quantity FROM UserStocks WHERE UserID = ? AND StockID = (SELECT StockID FROM SystemStocks WHERE Name = ?)";
+        String query = "SELECT Quantity FROM UserStocks WHERE UserID = ? AND StockName = ?";
         try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
              PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, userId);

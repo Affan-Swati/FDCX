@@ -143,7 +143,7 @@ public class StockManager
     		user.getAccount().addStock(stock, quantity);
         	dbHandler.addUserStock(user.getCNIC(),stock.getName() , quantity);
         	currencyManager.removeCurrencyFromWallet(user.getAccount().getWallet(), "USD", stock.getUnitPrice() * quantity);
-        	dbHandler.updateUserBalance(user.getCNIC(), "USD", stock.getUnitPrice() * quantity, false);
+          	dbHandler.updateUserBalance(user.getCNIC(), "Dollar","USD", 1.0 ,stock.getUnitPrice() * quantity,"Fiat",false);
         	currencyManager.addCurrency("Dollar", "USD", 1.0 , "fiat", stock.getUnitPrice() * quantity);
         	return true;
     	}
@@ -162,7 +162,7 @@ public class StockManager
     		this.addStockToSystem(stock.getName(), stock.getUnitPrice(), quantity);
         	dbHandler.removeUserStock(user.getCNIC(),stock.getName() , quantity);
         	currencyManager.addCurrencyToWallet(user.getAccount().getWallet(), "USD", stock.getUnitPrice() * quantity);
-        	dbHandler.updateUserBalance(user.getCNIC(), "USD", stock.getUnitPrice() * quantity, true);
+        	dbHandler.updateUserBalance(user.getCNIC(), "Dollar","USD", 1.0 ,stock.getUnitPrice() * quantity,"Fiat",true);
         	currencyManager.removeCurrency("USD", stock.getUnitPrice() * quantity );
         	return true;
     	}

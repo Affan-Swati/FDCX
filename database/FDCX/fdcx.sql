@@ -85,14 +85,18 @@ CREATE TABLE UserStocks
 );
 
 -- For currencies
+
 CREATE TABLE UserCurrencies 
 (
+    CurrencyID INT AUTO_INCREMENT,   -- Unique ID for each currency in the system
     UserID varchar(13) NOT NULL,                                   -- Foreign key to Users table
-    CurrencyID INT,                               -- Foreign key to Currencies table
-    Amount DECIMAL(10, 2) NOT NULL,               -- Amount of the currency owned
-    PRIMARY KEY (UserID, CurrencyID),             -- Composite primary key
-    FOREIGN KEY (UserID) REFERENCES Users(UserID),
-    FOREIGN KEY (CurrencyID) REFERENCES Currencies(CurrencyID)
+    CurrencyName VARCHAR(100) NOT NULL,          -- Name of the currency (e.g., USD, BTC)
+    CurrencyCode VARCHAR(10) NOT NULL UNIQUE,    -- Code for the currency (e.g., USD, BTC)
+    RateAgainstUSD DECIMAL(10, 2) NOT NULL,      -- Exchange rate compared to USD
+	Amount INT DEFAULT 0,                       -- Quantity of the stock available
+    Type varchar(10)  NOT NULL,        -- Type of currency: "Fiat" or "Crypto"
+    PRIMARY KEY (CurrencyID),                    -- Composite primary key
+    FOREIGN KEY (UserID) REFERENCES Users(UserID)
 );
 
 CREATE TABLE SystemStocks 
@@ -104,15 +108,16 @@ CREATE TABLE SystemStocks
     Available BOOLEAN DEFAULT TRUE                -- Whether the stock is available for purchase
 );
 
-
 CREATE TABLE SystemCurrencies 
 (
-    CurrencyID INT AUTO_INCREMENT PRIMARY KEY,   -- Unique ID for each currency in the system
-    CurrencyName VARCHAR(100) NOT NULL,          -- Name of the currency (e.g., USD, BTC)
+    CurrencyID INT AUTO_INCREMENT ,   -- Unique ID for each currency in the system
+    CurrencyName VARCHAR(100) NOT NULL UNIQUE,          -- Name of the currency (e.g., USD, BTC)
     CurrencyCode VARCHAR(10) NOT NULL UNIQUE,    -- Code for the currency (e.g., USD, BTC)
     RateAgainstUSD DECIMAL(10, 2) NOT NULL,      -- Exchange rate compared to USD
-    Type ENUM('Fiat', 'Crypto') NOT NULL,        -- Type of currency: "Fiat" or "Crypto"
-    Available BOOLEAN DEFAULT TRUE               -- Whether the currency is available in the system
+	Amount DECIMAL(10,2) DEFAULT 0,                       -- Quantity of the stock available
+    Type varchar(10) NOT NULL,                  -- Type of currency: "Fiat" or "Crypto"
+    Available BOOLEAN DEFAULT TRUE,               -- Whether the currency is available in the system
+	 PRIMARY KEY (CurrencyID)
 );
 
 CREATE TABLE TransactionLogs 
@@ -120,16 +125,28 @@ CREATE TABLE TransactionLogs
     UserID varchar(13) NOT NULL,                                     -- Foreign key to the Users table
 	CurrencyCode VARCHAR(10) NOT NULL UNIQUE,
     Amount Decimal(10,2) Not NULL, 
-    Type VARCHAR(10) NOT NULL,
+    Type VARCHAR(20) NOT NULL,
     TransactionDateTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Date and time of the transaction
     FOREIGN KEY (UserID) REFERENCES Users(UserID)   -- Link to Users table
 );
 
- Delete From Users where UserId != "25";
+INSERT INTO UserCurrenies (UserID, CurrencyName, CurrencyCode,RateAgainstUSD,Amount) VALUES ("3740583626159","Dollar","USD",1.0,10000);
+
  Select * from Users;
  Select * from accounts;
  SELECT * FROM ADMINS;
  SELECT * FROM SYSTEMSTOCKS;
- 
- DELETE FROM ACCOUNTS where adminID =  "1234512398765"; 
- DELETE FROM ADMINS where adminID =  "1234512398765";
+ SELECT * FROM USERSTOCKS;
+ SELECT * FROM USERCURRENCIES;
+ Select * From SystemCurrencies;
+  
+Delete from SystemCurrencies;
+DELETE from TransactionLogs;
+Delete from UserCurrencies ;
+Delete from SystemCurrencies;
+Delete from UserCurrencies ;
+DELETE FROM SYSTEMSTOCKS ; 
+Delete from Accounts ; 
+Delete from Wallets ;
+Delete From Users ;
+DELETE FROM ADMINS;

@@ -27,7 +27,7 @@ public class CurrencyManager // singleton
 
     public void addCurrency(String currencyName, String currencyCode, double rateAgainstUSD, String type, double amount) 
     {
-    	dbHandler.updateSystemBalance(currencyCode, amount, true);
+    	dbHandler.updateSystemBalance(currencyName, currencyCode, rateAgainstUSD, amount, type, true);
     	
         for (Currency c : currencyList) 
         {
@@ -62,7 +62,7 @@ public class CurrencyManager // singleton
 
                 // Deduct the amount
                 c.setAmount(c.getAmount() - amount);
-                dbHandler.updateSystemBalance(currencyCode, amount, false);
+                dbHandler.updateSystemBalance(c.getCurrencyName(), currencyCode, c.getRateAgainstUSD(), amount, c.getType(), false);
                
                 System.out.println("Currency amount updated successfully: " + currencyCode + ", Remaining Amount: " + c.getAmount());
                 
@@ -92,6 +92,19 @@ public class CurrencyManager // singleton
         } else {
             System.out.println("Insufficient amount of " + currencyCode + " in the system.");
         }
+    }
+    
+    public Currency getCurrency(String currencyCode)
+    {
+    	for(Currency c : currencyList)
+    	{
+    		if(c.getCurrencyCode().equals(currencyCode))
+    		{
+    			return c;
+    		}
+    	}
+    	
+    	return null;
     }
 
     // Remove currency from a user's wallet and add it back to the system

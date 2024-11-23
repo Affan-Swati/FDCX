@@ -177,8 +177,9 @@ public class FDCX
     	
     	
     	user.getAccount().setLoyaltyPoints(0);
-    	dbHandler.updateUserBalance(user.getCNIC(), "USD", points/10 , true);
-    	dbHandler.updateSystemBalance("USD", points / 10, false);
+    
+    	dbHandler.updateUserBalance(user.getCNIC(), "Dollar" ,"USD", 1.0 ,points/10 , "Fiat" , true);
+    	dbHandler.updateSystemBalance( "Dollar" ,"USD", 1.0 ,points/10 , "Fiat" , false);
     	
     	return true;
  

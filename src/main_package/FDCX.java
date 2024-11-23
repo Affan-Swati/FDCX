@@ -121,12 +121,14 @@ public class FDCX
     	{
     		bankingService.buyFiat(user, currencyCode, amount);
     		this.logTransaction(user, currencyCode, amount, type + " bought");
+    		user.getAccount().setLoyaltyPoints(user.getAccount().getLoyaltyPoints() + 10);
     		return true;
     	}
     	else if ("crypto".equals(type))
     	{
     		cryptoService.buyCrypto(user, currencyCode, amount);
     		this.logTransaction(user, currencyCode, amount, type + " bought");
+    		user.getAccount().setLoyaltyPoints(user.getAccount().getLoyaltyPoints() + 10);
     		return true;
     	}
     	
@@ -157,6 +159,7 @@ public class FDCX
     public void assignStockToUser(User user , Stock stock , int quantity)
     {
     	stockManager.addStockToUser(user, stock, quantity);
+    	user.getAccount().setLoyaltyPoints(user.getAccount().getLoyaltyPoints() + 10);
     	this.logTransaction(user, stock.getName(), quantity, " stock bought");
     }
     
@@ -166,10 +169,23 @@ public class FDCX
     	this.logTransaction(user, stock.getName(), quantity, " stock sold");
     }
 
-    public boolean claimLoyaltyPoints()
+    public boolean claimLoyaltyPoints(User user)
     {
-    	// TODO:
-    	return false;
+    	int points = user.getAccount().getLoyaltyPoints();
+    	
+    	if(points == 0)
+    	{
+    		System.out.println("User has no loyalty points!");
+    		return false;
+    	}
+    	
+    	
+    	user.getAccount().setLoyaltyPoints(0);
+    	dbHandler.updateUserBalance(user.getCNIC(), "USD", points/10 , true);
+    	dbHandler.updateSystemBalance("USD", points / 10, false);
+    	
+    	return true;
+ 
     }
     
     

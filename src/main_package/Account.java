@@ -4,7 +4,7 @@ import java.util.*;
 public class Account 
 {
 	private String type; // "admin" , "user"
-	private Map<String, Double> stockBalances;
+	private Map<String, Integer> stockBalances;
     private Wallet wallet;
     private Subscription subscription;
     private int loyaltyPoints;
@@ -41,7 +41,7 @@ public class Account
     	return "";
     }
     
-    public void addStock(Stock stock , double quantity)
+    public void addStock(Stock stock , int quantity)
     {
     	if (quantity < 0) 
         {
@@ -49,10 +49,10 @@ public class Account
             return;
         }
     	
-    	stockBalances.put(stock.getName(), stockBalances.getOrDefault(stock.getName(), 0.0) + quantity);
+    	stockBalances.put(stock.getName(), stockBalances.getOrDefault(stock.getName(), 0) + quantity);
     }
     
-    public boolean removeStock(Stock stock , double quantity)
+    public boolean removeStock(Stock stock , int quantity)
     {
     	if (quantity < 0) 
         {
@@ -65,8 +65,9 @@ public class Account
             return false;
         }
 
-        double currentBalance = stockBalances.get(stock.getName());
-        if (currentBalance >= quantity) {
+        int currentBalance = stockBalances.get(stock.getName());
+        if (currentBalance >= quantity) 
+        {
         	stockBalances.put(stock.getName(), currentBalance - quantity);
             System.out.println(quantity + " units of " + stock.getName() + " removed from account.");
             return true;
@@ -138,11 +139,11 @@ public class Account
 		this.password = password;
 	}
 
-	public Map<String, Double> getStockBalances() {
+	public Map<String, Integer> getStockBalances() {
 		return stockBalances;
 	}
 
-	public void setStockBalances(Map<String, Double> stockBalances) {
+	public void setStockBalances(Map<String, Integer> stockBalances) {
 		this.stockBalances = stockBalances;
 	}
 	

@@ -70,6 +70,19 @@ public class CryptoService
 			return true;
 		}
 	}
+	
+	public void exchangeCrypto(String fromCryptoCode , String toCryptoCode , User user , double amount)
+    {
+    	
+    	double fromRate = currencyManager.getCurrencyRate(fromCryptoCode);
+    	double toRate = currencyManager.getCurrencyRate(toCryptoCode);
+    	
+    	double newAmount = currencyManager.convertCurrency(amount, fromRate, toRate);
+    	
+    	this.sellCrypto(user, fromCryptoCode, amount);
+    	this.buyCrypto(user, toCryptoCode, newAmount);
+    	
+    }
 
 }
 

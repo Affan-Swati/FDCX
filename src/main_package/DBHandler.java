@@ -250,6 +250,40 @@ public class DBHandler // singleton
             e.printStackTrace();
         }
     }
+    
+
+    public List<String> getTransactionHistory(String userId) 
+    {
+        List<String> transactionHistory = new ArrayList<>();
+        String query = "SELECT CurrencyCode, Amount, Type, TransactionDateTime FROM TransactionLogs WHERE UserID = ? ORDER BY TransactionDateTime DESC";
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            // Set the userId parameter in the query
+            stmt.setString(1, userId);
+
+            // Execute the query
+            try (ResultSet rs = stmt.executeQuery()) 
+            {
+                // Process the results and populate the transaction history list
+                while (rs.next()) {
+                    String currencyCode = rs.getString("CurrencyCode");
+                    double amount = rs.getDouble("Amount");
+                    String type = rs.getString("Type");
+                    Timestamp transactionDateTime = rs.getTimestamp("TransactionDateTime");
+
+                    // Format the transaction as a String and add it to the list
+                    String transaction = String.format("Currency: %s | Amount: %.2f | Type: %s | Date: %s", 
+                                                        currencyCode, amount, type, transactionDateTime);
+                    transactionHistory.add(transaction);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return transactionHistory;
+    }
 
     public boolean buyCrypto(String userId, String cryptoCode, double amount) {
         if (isSufficientSystemBalance(cryptoCode, amount)) {

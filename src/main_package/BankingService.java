@@ -5,8 +5,8 @@ import java.util.Map;
 public class BankingService 
 {
 
-	DBHandler dbHandler = null;
-	CurrencyManager currencyManager = null;
+	private DBHandler dbHandler = null;
+	private CurrencyManager currencyManager = null;
 	
 	public BankingService ()
 	{
@@ -49,7 +49,7 @@ public class BankingService
 	}
 	
 	public boolean transferFiat(User fromUser, User toUser, String currencyCode,double amount)
-	 {
+	{
 		Wallet fromWallet =  fromUser.getAccount().getWallet() ;
 		Wallet toWallet = toUser.getAccount().getWallet();
 		
@@ -70,5 +70,16 @@ public class BankingService
 			return true;
 		}
 	 }
+	
+    public void exchangeFiat(String fromCurrencyCode , String toCurrencyCode , User user , double amount)
+    {
+    	double fromRate = currencyManager.getCurrencyRate(fromCurrencyCode);
+    	double toRate = currencyManager.getCurrencyRate(toCurrencyCode);
+    	
+    	double newAmount = currencyManager.convertCurrency(amount, fromRate, toRate);
+    	
+    	this.sellFiat(user, fromCurrencyCode, amount);
+    	this.buyFiat(user, toCurrencyCode, newAmount);
+    }
 }
 

@@ -18,8 +18,7 @@ public class Currency
         this.type = type;
         this.amount = amount;
     }
-
-    // Getters
+    
     public String getCurrencyName() 
     {
         return currencyName;

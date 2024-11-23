@@ -2,6 +2,9 @@ package main_package;
 
 import java.sql.*;
 
+
+// TODO: record transactions in FBr database
+
 public class FBR 
 {
     private static final double DEFAULT_TAX = 7.5; // Default tax rate
@@ -13,7 +16,9 @@ public class FBR
     {
         
     }
-
+    
+   
+    
     // Record a new transaction (buy/sell)
     public void recordTransaction(String cnic, String name, String transactionType, String assetType, String assetName, 
                                   String assetCode, double quantity, double unitPrice, double taxPercentage, String remarks) 

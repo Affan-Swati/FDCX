@@ -2,9 +2,6 @@ package main_package;
 import java.util.List;
 import java.util.ArrayList;
 
-
-// TODO: ADD A LIST OF STOCK OBJECTS TOO TO STORE THEIR UNIT PRICES ETC USED FOR CALCULATIONS
-
 public class StockManager 
 {
 	private List<Stock> stocks;

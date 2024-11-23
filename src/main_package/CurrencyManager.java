@@ -119,6 +119,27 @@ public class CurrencyManager // singleton
         return null; // Currency not found
     }
 
+    public double convertCurrency(double amount, double sourceRate, double targetRate) 
+    {
+        return amount * (targetRate / sourceRate);
+    }
+    
+    
+    public double getCurrencyRate(String currencyCode)
+    {
+    	Currency currency = findCurrency(currencyCode); 
+    	if(currency == null)
+    	{
+    		System.out.println("CURRENCY DOESNT EXIST IN THE SYSTEM");
+    		return -1.0;
+    	}
+    	
+    	else
+    	{
+    		return currency.getRateAgainstUSD();
+    	}
+    }
+    
     // Display all currencies in the system
     public void displayCurrencies() 
     {

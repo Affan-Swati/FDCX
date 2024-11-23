@@ -182,7 +182,49 @@ public class FDCX
     	dbHandler.recordTransaction(user.getCNIC(), currencyCode, amount, type);
     }
     
+    public List<String> getTransactionHistory(String userId)
+    {
+    	return dbHandler.getTransactionHistory(userId);
+    }
     
+    public Pair<Map<String,Integer>, Map<String , Double>> getWallet(String userId)
+    {
+    	if(!isUser(userId))
+    	{
+    		System.out.println("User doesn't exist in the system!");
+    		return null;
+    	}
+    	
+    	User user = getUser(userId);
+    	
+    	return new Pair<Map<String,Integer>,Map<String,Double>>(user.getAccount().getStockBalances() ,user.getAccount().getWallet().getCurrencyBalances());
+    }
+    
+    
+    
+    private boolean isUser(String userId)
+    {
+    	for(User user : users)
+    	{
+    		if(user.getCNIC().equals(userId))
+    		{
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+    private User getUser(String userId)
+    {
+    	for(User user : users)
+    	{
+    		if(user.getCNIC().equals(userId))
+    		{
+    			return user;
+    		}
+    	}
+    	
+    	return null;
+    }
     // List all users
     public void listUsers() 
     {

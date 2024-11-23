@@ -21,9 +21,14 @@ public class BankingService
 	
 	public boolean buyFiat(User user, String currencyCode ,double amount)
 	 {
+		if(!currencyManager.hasEnoughUSD(user, amount + currencyManager.getTax(amount, currencyCode), currencyCode)) 
+			return false;
+		
 		 if(dbHandler.buyFiat(user.getCNIC(), currencyCode, amount))
 		 {
 			 currencyManager.addCurrencyToWallet(user.getAccount().getWallet(), currencyCode, amount);
+			 currencyManager.removeCurrencyFromWallet(user.getAccount().getWallet(), "USD", currencyManager.convertCurrency(amount, currencyManager.getCurrencyRate(currencyCode), 1.0) + currencyManager.getTax(amount, currencyCode));
+			 dbHandler.sellFiat(user.getCNIC(), "USD", currencyManager.convertCurrency(amount, currencyManager.getCurrencyRate(currencyCode), 1.0) + currencyManager.getTax(amount, currencyCode));
 			 return true;
 		 }
 		 else
@@ -38,6 +43,8 @@ public class BankingService
 		 if(dbHandler.sellFiat(user.getCNIC(), currencyCode, amount))
 		 {
 			 currencyManager.removeCurrencyFromWallet(user.getAccount().getWallet(), currencyCode, amount);
+			 currencyManager.addCurrencyToWallet(user.getAccount().getWallet(), "USD", currencyManager.convertCurrency(amount, currencyManager.getCurrencyRate(currencyCode), 1.0) - currencyManager.getTax(amount, currencyCode));
+			 dbHandler.buyFiat(user.getCNIC(), "USD", currencyManager.convertCurrency(amount, currencyManager.getCurrencyRate(currencyCode), 1.0) - currencyManager.getTax(amount, currencyCode));
 			 return true;
 		 }
 		 else
@@ -48,7 +55,7 @@ public class BankingService
 			 
 	}
 	
-	public boolean transferFiat(User fromUser, User toUser, String currencyCode,double amount)
+	public boolean transferFiat(User fromUser, User toUser, String currencyCode,double amount) // transfer is free of cost
 	{
 		Wallet fromWallet =  fromUser.getAccount().getWallet() ;
 		Wallet toWallet = toUser.getAccount().getWallet();
@@ -71,7 +78,7 @@ public class BankingService
 		}
 	 }
 	
-    public void exchangeFiat(String fromCurrencyCode , String toCurrencyCode , User user , double amount)
+    public void exchangeFiat(String fromCurrencyCode , String toCurrencyCode , User user , double amount) // exchange is free of cost too
     {
     	double fromRate = currencyManager.getCurrencyRate(fromCurrencyCode);
     	double toRate = currencyManager.getCurrencyRate(toCurrencyCode);

@@ -7,17 +7,22 @@ import java.sql.*;
 
 public class FBR 
 {
-    private static final double DEFAULT_TAX = 7.5; // Default tax rate
+    private static final double DEFAULT_TAX = 0.075; // Default tax rate
+    private static final double SERVICE_CHARGES = 0.02; //
     private static final String connectionString = "jdbc:mysql://localhost:3306/FBR"; // Database URL
     private static final String USER = "root"; // Database username
     private static final String PASSWORD = "Affan@2004"; // Database password
 
     public FBR() 
     {
-        
+    
     }
     
    
+    public double calculateTax(double amount)
+    {
+    	return (DEFAULT_TAX * amount) +  (SERVICE_CHARGES * amount);
+    }
     
     // Record a new transaction (buy/sell)
     public void recordTransaction(String cnic, String name, String transactionType, String assetType, String assetName, 

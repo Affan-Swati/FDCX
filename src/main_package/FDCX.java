@@ -15,7 +15,6 @@ public class FDCX
     private BankingService bankingService;
     private CryptoService cryptoService;
     private NADRA nadra; 
-    private FBR fbr;
 
     public FDCX() 
     {
@@ -24,7 +23,6 @@ public class FDCX
         transactionLogs = new ArrayList<>();
         stockManager = new StockManager();
         nadra = new NADRA();
-        fbr = new FBR();
         dbHandler = DBHandler.getInstance();
         bankingService = new BankingService();
         cryptoService = new CryptoService();

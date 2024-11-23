@@ -6,11 +6,13 @@ public class StockManager
 {
 	private List<Stock> stocks;
     private DBHandler dbHandler;
+    private CurrencyManager currencyManager;
     
     public StockManager()
     {
     	 this.stocks = new ArrayList<>();
     	 this.dbHandler = DBHandler.getInstance();
+    	 this.currencyManager = CurrencyManager.getInstance();
     }
     
     public void addStockToSystem(String stockName , double unitPrice, int quantity)
@@ -86,10 +88,19 @@ public class StockManager
     
     public boolean addStockToUser(User user , Stock stock , int quantity)
     {
+    	if(!currencyManager.hasEnoughUSD(user, stock.getUnitPrice() ,quantity))
+    	{
+    		System.out.println("User doesn't have enough USD to Buy Stock!");
+    		return false;
+    	}
+    	
     	if(this.removeStockFromSystem(stock.getName(), quantity))
     	{
     		user.getAccount().addStock(stock, quantity);
         	dbHandler.addUserStock(user.getCNIC(),stock.getName() , quantity);
+        	currencyManager.removeCurrencyFromWallet(user.getAccount().getWallet(), "USD", stock.getUnitPrice() * quantity);
+        	dbHandler.updateUserBalance(user.getCNIC(), "USD", stock.getUnitPrice() * quantity, false);
+        	currencyManager.addCurrency("Dollar", "USD", 1.0 , "fiat", stock.getUnitPrice() * quantity);
         	return true;
     	}
     	else
@@ -106,6 +117,9 @@ public class StockManager
     	{
     		this.addStockToSystem(stock.getName(), stock.getUnitPrice(), quantity);
         	dbHandler.removeUserStock(user.getCNIC(),stock.getName() , quantity);
+        	currencyManager.addCurrencyToWallet(user.getAccount().getWallet(), "USD", stock.getUnitPrice() * quantity);
+        	dbHandler.updateUserBalance(user.getCNIC(), "USD", stock.getUnitPrice() * quantity, true);
+        	currencyManager.removeCurrency("USD", stock.getUnitPrice() * quantity );
         	return true;
     	}
     	

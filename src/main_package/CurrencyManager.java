@@ -7,12 +7,14 @@ public class CurrencyManager // singleton
 	private static CurrencyManager instance = null;
     private List<Currency> currencyList; // List of currencies in the system
     private DBHandler dbHandler;
+    private FBR fbr;
 
     // Constructor
     private CurrencyManager() 
     {
         this.currencyList = new ArrayList<>();
         dbHandler = DBHandler.getInstance();
+        fbr = new FBR();
     }
     
     public static CurrencyManager getInstance()
@@ -124,6 +126,29 @@ public class CurrencyManager // singleton
         return amount * (targetRate / sourceRate);
     }
     
+    public boolean hasEnoughUSD (User user , double amount, String currencyCode)
+    {
+    	double requiredUSD = this.convertCurrency(amount,this.getCurrencyRate(currencyCode), 1.0);
+    	
+    	if(user.getAccount().getWallet().getCurrencyBalance("USD") < requiredUSD)
+    	{
+    		return false;
+    	}
+    	
+    	return true;
+    }
+    
+    public boolean hasEnoughUSD (User user , double unitPrice , int quantity)
+    {
+    	double requiredUSD =  unitPrice * quantity;
+    	
+    	if(user.getAccount().getWallet().getCurrencyBalance("USD") < requiredUSD)
+    	{
+    		return false;
+    	}
+    	
+    	return true;
+    }
     
     public double getCurrencyRate(String currencyCode)
     {
@@ -138,6 +163,15 @@ public class CurrencyManager // singleton
     	{
     		return currency.getRateAgainstUSD();
     	}
+    }
+    
+    public double getTax(double amount , String currencyCode)
+    {
+    	double inUSD = this.convertCurrency(amount , this.getCurrencyRate(currencyCode) , 1.0);
+    	
+    	double tax = fbr.calculateTax(inUSD);
+    	
+    	return tax;
     }
     
     // Display all currencies in the system

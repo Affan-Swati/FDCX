@@ -19,11 +19,18 @@ public class CryptoService
 	    return dbHandler.getCryptoExchangeRates();
 	}
 	
+	
+	
 	public boolean buyCrypto(User user, String cryptoCode ,double amount)
 	 {
+		if(!currencyManager.hasEnoughUSD(user, amount + currencyManager.getTax(amount, cryptoCode), cryptoCode)) 
+			return false;
+		
 		 if(dbHandler.buyCrypto(user.getCNIC(), cryptoCode, amount))
 		 {
 			 currencyManager.addCurrencyToWallet(user.getAccount().getWallet(), cryptoCode, amount);
+			 currencyManager.removeCurrencyFromWallet(user.getAccount().getWallet(), "USD", currencyManager.convertCurrency(amount, currencyManager.getCurrencyRate(cryptoCode), 1.0) + currencyManager.getTax(amount, cryptoCode));
+			 dbHandler.sellFiat(user.getCNIC(), "USD", currencyManager.convertCurrency(amount, currencyManager.getCurrencyRate(cryptoCode), 1.0) + currencyManager.getTax(amount, cryptoCode));
 			 return true;
 		 }
 		 else
@@ -33,11 +40,14 @@ public class CryptoService
 		 }
 	 }
 	
+
 	public boolean sellCrypto(User user, String cryptoCode, double amount)
 	{
 		 if(dbHandler.sellCrypto(user.getCNIC(), cryptoCode, amount))
 		 {
 			 currencyManager.removeCurrencyFromWallet(user.getAccount().getWallet(), cryptoCode, amount);
+			 currencyManager.addCurrencyToWallet(user.getAccount().getWallet(), "USD", currencyManager.convertCurrency(amount, currencyManager.getCurrencyRate(cryptoCode), 1.0) - currencyManager.getTax(amount, cryptoCode));
+			 dbHandler.buyFiat(user.getCNIC(), "USD", currencyManager.convertCurrency(amount, currencyManager.getCurrencyRate(cryptoCode), 1.0) - currencyManager.getTax(amount, cryptoCode));
 			 return true;
 		 }
 		 else

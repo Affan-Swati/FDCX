@@ -179,30 +179,62 @@ public class DBHandler // singleton
 
     public void updateUserBalance(String userId, String currencyCode, double amount, boolean isIncrease) 
     {
+        // Try updating the existing record first
         String updateQuery = "UPDATE UserCurrencies SET Amount = Amount " + (isIncrease ? "+" : "-") + " ? WHERE UserID = ? AND CurrencyCode = ?";
         try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
              PreparedStatement stmt = conn.prepareStatement(updateQuery)) {
+
             stmt.setDouble(1, amount);
             stmt.setString(2, userId);
             stmt.setString(3, currencyCode);
-            stmt.executeUpdate();
+
+            int rowsAffected = stmt.executeUpdate();
+
+            // If no rows were affected, insert the new balance entry
+            if (rowsAffected == 0) {
+                String insertQuery = "INSERT INTO UserCurrencies (UserID, CurrencyCode, Amount) VALUES (?, ?, ?)";
+                try (PreparedStatement insertStmt = conn.prepareStatement(insertQuery)) {
+                    insertStmt.setString(1, userId);
+                    insertStmt.setString(2, currencyCode);
+                    insertStmt.setDouble(3, amount);
+                    insertStmt.executeUpdate();
+                }
+            }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
+
     public void updateSystemBalance(String currencyCode, double amount, boolean isIncrease) 
     {
+        // Try updating the existing record first
         String updateQuery = "UPDATE SystemCurrencies SET Amount = Amount " + (isIncrease ? "+" : "-") + " ? WHERE CurrencyCode = ?";
         try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
              PreparedStatement stmt = conn.prepareStatement(updateQuery)) {
+
             stmt.setDouble(1, amount);
             stmt.setString(2, currencyCode);
-            stmt.executeUpdate();
+
+            int rowsAffected = stmt.executeUpdate();
+
+            // If no rows were affected, insert the new system balance entry
+            if (rowsAffected == 0) 
+            {
+                String insertQuery = "INSERT INTO SystemCurrencies (CurrencyCode, Amount) VALUES (?, ?)";
+                try (PreparedStatement insertStmt = conn.prepareStatement(insertQuery)) {
+                    insertStmt.setString(1, currencyCode);
+                    insertStmt.setDouble(2, amount);
+                    insertStmt.executeUpdate();
+                }
+            }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
 
     public void recordTransaction(String userId, String currencyCode, double amount, String type) 
     {

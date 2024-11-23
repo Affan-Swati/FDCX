@@ -10,7 +10,8 @@ public class Wallet
     private Map<String, Double> currencyBalances; // Currency code -> Amount held
 
     // Constructor
-    public Wallet() {
+    public Wallet() 
+    {
         this.walletID = UUID.randomUUID().toString();
         this.currencyBalances = new HashMap<>(); // Initialize with an empty set of currencies
     }

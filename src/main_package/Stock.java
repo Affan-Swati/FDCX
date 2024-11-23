@@ -3,21 +3,22 @@ package main_package;
 public class Stock 
 {
     private String name;
-    private float unitPrice;
+    private double unitPrice;
     private String purchase_time;
+    private int quantity;
     private boolean available;
 
-    public Stock(String name, float unitPrice) 
+    public Stock(String name, double unitPrice , int quantity) 
     {
         this.name = name;
         this.unitPrice = unitPrice;
         this.available = true;
+        this.quantity = quantity;
     }
 
     public void purchaseStock()
     {
         this.purchase_time = DateTime.getCurrentDate() + DateTime.getCurrentTime();
-        this.available = false;
     }
     
     public void getPrediction() 
@@ -33,11 +34,11 @@ public class Stock
 		this.name = name;
 	}
 
-	public float getUnitPrice() {
+	public double getUnitPrice() {
 		return unitPrice;
 	}
 
-	public void setUnitPrice(float unitPrice) {
+	public void setUnitPrice(double unitPrice) {
 		this.unitPrice = unitPrice;
 	}
 
@@ -56,5 +57,15 @@ public class Stock
 
 	public void setAvailable(boolean available) {
 		this.available = available;
+	}
+
+	public int getQuantity() 
+	{
+		return quantity;
+	}
+
+	public void setQuantity(int quantity) 
+	{
+		this.quantity = quantity;
 	}
 }

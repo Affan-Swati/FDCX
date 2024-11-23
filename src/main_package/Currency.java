@@ -10,12 +10,13 @@ public class Currency
     private double amount;
 
     // Constructor
-    public Currency(String currencyName, String currencyCode, double rateAgainstUSD, String type) 
+    public Currency(String currencyName, String currencyCode, double rateAgainstUSD, String type, double amount) 
     {
         this.currencyName = currencyName;
         this.currencyCode = currencyCode;
         this.rateAgainstUSD = rateAgainstUSD;
         this.type = type;
+        this.amount = amount;
     }
 
     // Getters

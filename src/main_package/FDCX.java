@@ -100,14 +100,17 @@ public class FDCX
  
     public boolean withdrawFunds(String type , User user , String currencyCode , double amount) // type fiat or crypto
     {
+    	
     	if("fiat".equals(type))
     	{
     		bankingService.sellFiat(user, currencyCode, amount);
+    		this.logTransaction(user, currencyCode, amount, type + " sold");
     		return true;
     	}
     	else if ("crypto".equals(type))
     	{
     		cryptoService.sellCrypto(user, currencyCode, amount);
+    		this.logTransaction(user, currencyCode, amount, type + " sold");
     		return true;
     	}
     	return false;
@@ -119,11 +122,13 @@ public class FDCX
     	if("fiat".equals(type))
     	{
     		bankingService.buyFiat(user, currencyCode, amount);
+    		this.logTransaction(user, currencyCode, amount, type + " bought");
     		return true;
     	}
     	else if ("crypto".equals(type))
     	{
     		cryptoService.buyCrypto(user, currencyCode, amount);
+    		this.logTransaction(user, currencyCode, amount, type + " bought");
     		return true;
     	}
     	
@@ -136,11 +141,15 @@ public class FDCX
     	if("fiat".equals(type))
     	{
     		bankingService.transferFiat(fromUser, toUser, currencyCode, amount);
+    		this.logTransaction(fromUser, currencyCode, amount, type + " trade out");
+    		this.logTransaction(toUser, currencyCode, amount, type + " trade in");
     		return true;
     	}
     	else if ("crypto".equals(type))
     	{
     		cryptoService.transferCrypto(fromUser, toUser, currencyCode, amount);
+    		this.logTransaction(fromUser, currencyCode, amount, type + " trade out");
+    		this.logTransaction(toUser, currencyCode, amount, type + " trade in");
     		return true;
     	}
     	return false;
@@ -150,11 +159,13 @@ public class FDCX
     public void assignStockToUser(User user , Stock stock , int quantity)
     {
     	stockManager.addStockToUser(user, stock, quantity);
+    	this.logTransaction(user, stock.getName(), quantity, " stock bought");
     }
     
     public void removeStockFromUser(User user , Stock stock , int quantity)
     {
     	stockManager.removeStockFromUser(user, stock, quantity);
+    	this.logTransaction(user, stock.getName(), quantity, " stock sold");
     }
 
     public boolean claimLoyaltyPoints()
@@ -164,7 +175,12 @@ public class FDCX
     }
     
     
-    
+    public void logTransaction( User user , String currencyCode , double amount ,String type)
+    {
+    	TransactionLog log = new TransactionLog(user , currencyCode + " " + amount + " " + type);
+    	transactionLogs.add(log);
+    	dbHandler.recordTransaction(user.getCNIC(), currencyCode, amount, type);
+    }
     
     
     // List all users

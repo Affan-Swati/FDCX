@@ -117,11 +117,13 @@ CREATE TABLE SystemCurrencies
     Available BOOLEAN DEFAULT TRUE               -- Whether the currency is available in the system
 );
 
-CREATE TABLE TransactionLogs (
-    TransactionID INT AUTO_INCREMENT PRIMARY KEY,   -- Unique ID for each transaction
+CREATE TABLE TransactionLogs 
+(
     UserID INT,                                     -- Foreign key to the Users table
+	CurrencyCode VARCHAR(10) NOT NULL UNIQUE,
+    Amount Decimal(10,2) Not NULL, 
+    Type VARCHAR(10) NOT NULL,
     TransactionDateTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Date and time of the transaction
-    Details TEXT,                                    -- Details of the transaction
     FOREIGN KEY (UserID) REFERENCES Users(UserID)   -- Link to Users table
 );
 

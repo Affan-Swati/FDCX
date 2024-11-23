@@ -6,11 +6,13 @@ public class CurrencyManager // singleton
 {
 	private static CurrencyManager instance = null;
     private List<Currency> currencyList; // List of currencies in the system
+    private DBHandler dbHandler;
 
     // Constructor
     private CurrencyManager() 
     {
         this.currencyList = new ArrayList<>();
+        dbHandler = DBHandler.getInstance();
     }
     
     public static CurrencyManager getInstance()
@@ -21,31 +23,53 @@ public class CurrencyManager // singleton
     	return instance;
     }
 
-    // Add a new currency to the system
-    public void addCurrency(Currency currency)
+    public void addCurrency(String currencyName, String currencyCode, double rateAgainstUSD, String type, double amount) 
     {
-        for (Currency c : currencyList) {
-            if (c.getCurrencyCode().equals(currency.getCurrencyCode())) {
-                System.out.println("Currency already exists in the system.");
+    	dbHandler.updateSystemBalance(currencyCode, amount, true);
+    	
+        for (Currency c : currencyList) 
+        {
+            if (c.getCurrencyCode().equals(currencyCode)) 
+            {
+                // Currency exists, update its amount
+                c.setAmount(c.getAmount() + amount);
+                System.out.println("Currency amount updated successfully: " + currencyCode + ", New Amount: " + c.getAmount());
                 return;
             }
         }
-        currencyList.add(currency);
-        System.out.println("Currency added successfully: " + currency.getCurrencyCode());
+
+        // Add the currency as it doesn't exist
+        Currency newCurrency = new Currency(currencyName, currencyCode, rateAgainstUSD, type, amount);
+        currencyList.add(newCurrency);
+        System.out.println("Currency added successfully: " + currencyCode + ", Amount: " + amount);
     }
 
-    // Remove a currency by code from the system
-    public void removeCurrency(String currencyCode) 
+
+    public void removeCurrency(String currencyCode, double amount) 
     {
-        for (Currency c : currencyList) {
-            if (c.getCurrencyCode().equals(currencyCode)) {
-                currencyList.remove(c);
-                System.out.println("Currency removed successfully: " + currencyCode);
+        for (Currency c : currencyList) 
+        {
+            if (c.getCurrencyCode().equals(currencyCode)) 
+            {
+                // Check if there is enough amount to remove
+                if (c.getAmount() < amount) 
+                {
+                    System.out.println("Insufficient amount for currency: " + currencyCode);
+                    return;
+                }
+
+                // Deduct the amount
+                c.setAmount(c.getAmount() - amount);
+                dbHandler.updateSystemBalance(currencyCode, amount, false);
+               
+                System.out.println("Currency amount updated successfully: " + currencyCode + ", Remaining Amount: " + c.getAmount());
+                
                 return;
             }
         }
         System.out.println("Currency not found: " + currencyCode);
     }
+
 
     // Add currency to a user's wallet
     public void addCurrencyToWallet(Wallet wallet, String currencyCode, double amount) 
@@ -58,7 +82,8 @@ public class CurrencyManager // singleton
         }
 
         // Check if the system has enough of that currency
-        if (systemCurrency.getAmount() >= amount) {
+        if (systemCurrency.getAmount() >= amount) 
+        {
             wallet.addCurrency(currencyCode, amount); // Add to wallet
             systemCurrency.setAmount(systemCurrency.getAmount() - amount); // Decrease from system
             System.out.println(amount + " units of " + currencyCode + " added to wallet.");
@@ -95,7 +120,8 @@ public class CurrencyManager // singleton
     }
 
     // Display all currencies in the system
-    public void displayCurrencies() {
+    public void displayCurrencies() 
+    {
         System.out.println("Currencies in the system:");
         for (Currency c : currencyList) {
             System.out.println(c);

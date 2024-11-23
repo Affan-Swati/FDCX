@@ -214,6 +214,10 @@ public class FDCX
     	return new Pair<Map<String,Integer>,Map<String,Double>>(user.getAccount().getStockBalances() ,user.getAccount().getWallet().getCurrencyBalances());
     }
     
+    public boolean predictStockTrend(String stockName)
+    {
+    	return stockManager.predictStockTrend(stockName);
+    }
     
     
     private boolean isUser(String userId)

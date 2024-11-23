@@ -1,6 +1,5 @@
 package main_package;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 
 public class StockManager 
 {
@@ -13,6 +12,49 @@ public class StockManager
     	 this.stocks = new ArrayList<>();
     	 this.dbHandler = DBHandler.getInstance();
     	 this.currencyManager = CurrencyManager.getInstance();
+    }
+    
+    public boolean predictStockTrend(String stockName) 
+    {
+        Stock targetStock = null;
+
+        for (Stock stock : stocks) 
+        {
+            if (stock.getName().equals(stockName)) {
+                targetStock = stock;
+                break;
+            }
+        }
+
+        // If the stock is not found, return false (no prediction possible)
+        if (targetStock == null) 
+        {
+            System.out.println("Stock not found: " + stockName);
+            return false;
+        }
+
+        // Calculate the average quantity of all stocks except the target stock
+        double totalQuantity = 0;
+        int count = 0;
+
+        for (Stock stock : stocks)
+        {
+            if (!stock.getName().equals(stockName)) {
+                totalQuantity += stock.getQuantity();
+                count++;
+            }
+        }
+
+        double averageQuantity = (count > 0) ? totalQuantity / count : 0;
+
+        // Apply a formula to predict the trend
+        Random random = new Random();
+        double randomFactor = random.nextDouble(); // Generate a random number between 0 and 1
+
+        boolean isTrendUp = (targetStock.getQuantity() > averageQuantity * (1 + randomFactor));
+        System.out.println("Stock Trend for " + stockName + " is " + (isTrendUp ? "Up" : "Down"));
+        
+        return isTrendUp;
     }
     
     public void addStockToSystem(String stockName , double unitPrice, int quantity)

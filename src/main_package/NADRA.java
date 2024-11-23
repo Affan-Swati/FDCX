@@ -19,18 +19,21 @@ public class NADRA
         try (Connection conn = DriverManager.getConnection(connectionString, USER, PASSWORD)) 
         {
             // Step 1: Check if the user exists
-            try (PreparedStatement userExistsStmt = conn.prepareStatement("SELECT * FROM CitizenInformation WHERE CNIC = ?")) {
+            try (PreparedStatement userExistsStmt = conn.prepareStatement("SELECT * FROM NADRA.CitizenInformation WHERE cnic = ?")) 
+            {
                 userExistsStmt.setString(1, cnic);
-                ResultSet userExistsRs = userExistsStmt.executeQuery();
 
-                if (!userExistsRs.next()) {
+                ResultSet userExistsRs = userExistsStmt.executeQuery();
+                
+                if (!userExistsRs.next()) 
+                {
                     System.out.println("User with CNIC " + cnic + " does not exist.");
                     return false;
                 }
             }
 
             // Step 2: Check if the name matches
-            try (PreparedStatement nameMatchStmt = conn.prepareStatement("SELECT * FROM CitizenInformation WHERE CNIC = ? AND Name = ?")) 
+            try (PreparedStatement nameMatchStmt = conn.prepareStatement("SELECT * FROM CitizenInformation WHERE cnic = ? AND name = ?")) 
             {
                 nameMatchStmt.setString(1, cnic);
                 nameMatchStmt.setString(2, name);
@@ -44,10 +47,11 @@ public class NADRA
 
             // Step 3: Check if the age is 18 or older
             try (PreparedStatement ageCheckStmt = conn.prepareStatement(
-                    "SELECT TIMESTAMPDIFF(YEAR, DateOfBirth, CURDATE()) AS Age FROM CitizenInformation WHERE CNIC = ?")) 
+                    "SELECT TIMESTAMPDIFF(YEAR, DateOfBirth, CURDATE()) AS Age FROM CitizenInformation WHERE cnic = ?")) 
             {
                 ageCheckStmt.setString(1, cnic);
                 ResultSet ageCheckRs = ageCheckStmt.executeQuery();
+                
 
                 if (ageCheckRs.next()) {
                     int age = ageCheckRs.getInt("Age");
@@ -65,7 +69,7 @@ public class NADRA
         {
             e.printStackTrace();
         }
-
+        
         return false;
     }
 

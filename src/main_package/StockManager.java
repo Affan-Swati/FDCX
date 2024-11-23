@@ -78,6 +78,7 @@ public class StockManager
     		Stock stock = stocks.get(stockIndex);
     		stock.setQuantity(stock.getQuantity() + quantity);
     	}
+    	dbHandler.addStockToSystem(stockName, unitPrice, quantity);
     }
     
     public boolean removeStockFromSystem(String stockName , int quantity) // doesn't remove the entry , makes it 0 if entire stock removed
@@ -102,6 +103,7 @@ public class StockManager
         if (currentBalance >= quantity) 
         {
         	stock.setQuantity(currentBalance - quantity);
+        	dbHandler.removeStockFromSystem(stockName, quantity);
             System.out.println(quantity + " units of " + stockName + " removed from account.");
             return true;
         } else

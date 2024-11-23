@@ -21,7 +21,7 @@ public class FBR
    
     public double calculateTax(double amount)
     {
-    	return (DEFAULT_TAX * amount) +  (SERVICE_CHARGES * amount);
+    	return (DEFAULT_TAX * amount) + (SERVICE_CHARGES * amount);
     }
     
     // Record a new transaction (buy/sell)

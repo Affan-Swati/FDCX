@@ -37,11 +37,13 @@ public class FDCX
         System.out.println("User registered successfully: " + user);
     }
 
-    public void addAdmin(String name, String username, String email, String password, String CNIC ,  String phoneNumber ,  LocalDate DOB) 
+    public void addAdmin(String name, String email, String CNIC ,  String phoneNumber ,  LocalDate DOB , String username , String password) 
     {
-        Admin admin = new Admin(name, username, email, password , CNIC , phoneNumber ,DOB);
+        Admin admin = new Admin(name, email, CNIC , phoneNumber ,DOB);
         admins.add(admin);
+        
         dbHandler.registerAdmin(name, CNIC, DOB, email, phoneNumber);
+        this.createAdminAccount(admin, username,password);
         System.out.println("Admin added successfully: " + admin);
     }
     
@@ -53,20 +55,14 @@ public class FDCX
     		return;
     	}
     	
-    	dbHandler.createUserAccount(user.getCNIC(), username, password);
     	user.createAccount(username, password);
+    	dbHandler.createUserAccount(user.getCNIC(), username, password,user.getAccount().getWallet().getWalletID());   	
     }
     
-    public void createAdminAccount(Admin admin , String username, String password)
+    private void createAdminAccount(Admin admin , String username, String password)
     {
-    	if(!admin.isVerified())
-    	{
-    		System.out.println("ADMIN NOT VERIFIED. VERIFY ADMIN FIRST!");
-    		return;
-    	}
-    	
     	dbHandler.createAdminAccount(admin.getCNIC(), username, password);
-    	admin.createAccount(username, password);
+    	admin.registerAccount(username, password);
     }
     
     
@@ -188,6 +184,26 @@ public class FDCX
  
     }
     
+    public void addCurrencyToSystem(String currencyName, String currencyCode, double rateAgainstUSD, String type, double amount)
+    {
+    	this.admins.getFirst().addCurrencyToSystem(currencyName, currencyCode, rateAgainstUSD, type, amount);
+    }
+    
+    public void removeCurrencyFromSystem(String currencyCode, double amount)
+    {
+    	this.admins.getFirst().removeCurrencyFromSystem(currencyCode, amount);
+    }
+    
+    public void addStockToSystem(String stockName , double unitPrice , int quantity)
+    {
+    	this.admins.getFirst().addStockToSystem(stockName, unitPrice, quantity);
+    }
+    
+    public void removeStockFromSystem(String stockName , int quantity)
+    {
+    	this.admins.getFirst().removeStockFromSystem(stockName, quantity);
+    }
+    
     
     public void logTransaction( User user , String currencyCode , double amount ,String type)
     {
@@ -231,7 +247,7 @@ public class FDCX
     	}
     	return false;
     }
-    private User getUser(String userId)
+    public User getUser(String userId)
     {
     	for(User user : users)
     	{
@@ -243,6 +259,20 @@ public class FDCX
     	
     	return null;
     }
+    
+    public Admin getAdmin(String adminId)
+    {
+    	for(Admin admin : admins)
+    	{
+    		if(admin.getCNIC().equals(adminId))
+    		{
+    			return admin;
+    		}
+    	}
+    	
+    	return null;
+    }
+   
     // List all users
     public void listUsers() 
     {

@@ -7,7 +7,7 @@ public class Admin extends User
     private StockManager stockManager;
     private CurrencyManager currencyManager;
 	
-	 public Admin(String name ,String username, String email, String password, String CNIC, String phoneNumber , LocalDate DOB) 
+	 public Admin(String name ,String email,String CNIC, String phoneNumber , LocalDate DOB) 
 	 {
 		 super(name ,email,CNIC,phoneNumber,DOB);
 		 fraudMonitor = new FraudMonitor();
@@ -17,6 +17,11 @@ public class Admin extends User
 	 
 	 public void registerAccount(String username , String password)
 	 {
+		 if(this.getAccount() != null)
+		 {
+			 System.out.println("ACCOUNT ALREADY EXISTS FOR ADMIN");
+			 return;
+		 }
 		 this.setAccount(new Account(username,password,"admin"));
 	 }
 	 

@@ -28,12 +28,12 @@ public class DBHandler // singleton
     // 1. Register a new user (without account creation)
     public boolean registerUser(String name, String cnic, LocalDate dob, String email, String phoneNumber) 
     {
-        String insertUser = "INSERT INTO Users (Name, CNIC, DOB, Email, PhoneNumber, JoinDate, IsVerified) VALUES (?, ?, ?, ?, ?, CURDATE(), FALSE)";
+        String insertUser = "INSERT INTO Users (UserID, Name , DOB, Email, PhoneNumber, JoinDate, IsVerified) VALUES (?, ?, ?, ?, ?, CURDATE(), FALSE)";
         try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
              PreparedStatement stmt = conn.prepareStatement(insertUser, Statement.RETURN_GENERATED_KEYS)) {
 
-            stmt.setString(1, name);
-            stmt.setString(2, cnic);
+            stmt.setString(1, cnic);
+            stmt.setString(2, name);
             stmt.setDate(3, java.sql.Date.valueOf(dob));  // Convert LocalDate to sql.Date
             stmt.setString(4, email);
             stmt.setString(5, phoneNumber);
@@ -51,7 +51,7 @@ public class DBHandler // singleton
     
     public void setUserVerification(String CNIC, boolean status) 
     {
-    	  String updateVerification = "UPDATE Users SET IsVerified = ? WHERE CNIC = ?";
+    	  String updateVerification = "UPDATE Users SET IsVerified = ? WHERE UserID = ?";
     	  try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
     	       PreparedStatement stmt = conn.prepareStatement(updateVerification)) 
     	  {
@@ -65,13 +65,14 @@ public class DBHandler // singleton
     
 
     // 2. Register an admin (without account creation)
-    public boolean registerAdmin(String name, String cnic, LocalDate dob, String email, String phoneNumber) {
-        String insertAdmin = "INSERT INTO Users (Name, CNIC, DOB, Email, PhoneNumber, JoinDate, IsVerified) VALUES (?, ?, ?, ?, ?, CURDATE(), FALSE)";
+    public boolean registerAdmin(String name, String cnic, LocalDate dob, String email, String phoneNumber) 
+    {
+        String insertAdmin = "INSERT INTO Admins (adminID, Name, DOB, Email, PhoneNumber, JoinDate) VALUES (?, ?, ?, ?, ?, CURDATE())";
         try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
              PreparedStatement stmt = conn.prepareStatement(insertAdmin, Statement.RETURN_GENERATED_KEYS)) {
 
-            stmt.setString(1, name);
-            stmt.setString(2, cnic);
+            stmt.setString(1, cnic);
+            stmt.setString(2, name);
             stmt.setDate(3, java.sql.Date.valueOf(dob));
             stmt.setString(4, email);
             stmt.setString(5, phoneNumber);
@@ -88,25 +89,60 @@ public class DBHandler // singleton
     }
 
     // 3. Create an account for a user
-    public boolean createUserAccount(String userID, String username, String password) {
-        String insertAccount = "INSERT INTO Accounts (Username, Password, Type, UserID) VALUES (?, ?, 'user', ?)";
-        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
-             PreparedStatement stmt = conn.prepareStatement(insertAccount)) {
+    public boolean createUserAccount(String userID, String username, String password, String walletID) 
+    {
+        String insertWallet = "INSERT INTO Wallets (WalletID, UserID) VALUES (?, ?)";
+        String insertAccount = "INSERT INTO Accounts (Username, Password, Type, UserID, WalletID) VALUES (?, ?, 'user', ?, ?)";
 
-            stmt.setString(1, username);
-            stmt.setString(2, password);
-            stmt.setString(3, userID);
-            int rowsAffected = stmt.executeUpdate();
-            return rowsAffected > 0;
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD)) {
+            // Disable auto-commit to manage transactions manually
+            conn.setAutoCommit(false);
+
+            try (PreparedStatement walletStmt = conn.prepareStatement(insertWallet);
+                 PreparedStatement accountStmt = conn.prepareStatement(insertAccount)) {
+
+                // Step 1: Insert into Wallets table
+                walletStmt.setString(1, walletID);
+                walletStmt.setString(2, userID);
+                int walletRows = walletStmt.executeUpdate();
+
+                if (walletRows == 0) {
+                    throw new SQLException("Failed to insert into Wallets table.");
+                }
+
+                // Step 2: Insert into Accounts table
+                accountStmt.setString(1, username);
+                accountStmt.setString(2, password);
+                accountStmt.setString(3, userID);
+                accountStmt.setString(4, walletID);
+                int accountRows = accountStmt.executeUpdate();
+
+                if (accountRows == 0) {
+                    throw new SQLException("Failed to insert into Accounts table.");
+                }
+
+                // Commit transaction
+                conn.commit();
+                return true;
+            } catch (SQLException e) {
+                // Rollback transaction in case of failure
+                conn.rollback();
+                e.printStackTrace();
+            } finally {
+                // Restore auto-commit mode
+                conn.setAutoCommit(true);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         return false;
     }
 
     // 4. Create an account for an admin
-    public boolean createAdminAccount(String adminID, String username, String password) {
-        String insertAccount = "INSERT INTO Accounts (Username, Password, Type, UserID) VALUES (?, ?, 'admin', ?)";
+    public boolean createAdminAccount(String adminID, String username, String password) 
+    {
+        String insertAccount = "INSERT INTO Accounts (Username, Password, Type, adminID) VALUES (?, ?, 'admin', ?)";
         try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
              PreparedStatement stmt = conn.prepareStatement(insertAccount)) {
 

@@ -4,14 +4,12 @@ USE FDCX;
 CREATE TABLE Users 
 (
     UserID VARCHAR(15) PRIMARY KEY,    -- Unique ID CNIC for each user
-	AccountID INT,  
     Name VARCHAR(100) NOT NULL,               -- User's name
     DOB DATE NOT NULL,                         -- User's date of birth
     Email VARCHAR(100) NOT NULL,              -- User's email
     PhoneNumber VARCHAR(15),                  -- User's phone number
     JoinDate DATE NOT NULL,                   -- Join date of the user
-    IsVerified BOOLEAN DEFAULT FALSE,          -- Whether the user is verified or not
-     FOREIGN KEY (AccountID) REFERENCES Accounts(AccountID)  -- Link to Accounts table (one-to-one relation with user account)
+    IsVerified BOOLEAN DEFAULT FALSE          -- Whether the user is verified or not
 );
 
 CREATE TABLE Accounts 
@@ -20,12 +18,13 @@ CREATE TABLE Accounts
     Username VARCHAR(50) NOT NULL UNIQUE,         -- Username associated with the account
     Password VARCHAR(100) NOT NULL,               -- Password for the account
     Type ENUM('user', 'admin') NOT NULL,          -- Type of account: 'user' or 'admin'
-    WalletID INT,                                 -- Foreign key to Wallet table (only for users)
+    WalletID VARCHAR(50),                                 -- Foreign key to Wallet table (only for users)
     SubscriptionID INT,                           -- Foreign key to Subscription table (only for users)
     LoyaltyPoints INT DEFAULT 0,                  -- Loyalty points for the account
-    TransactionHistory TEXT,                      -- History of transactions (e.g., JSON, logs)
-    UserID INT,                                   -- Foreign key to Users table (for both users and admins)
+    UserID  VARCHAR(15),                                   -- Foreign key to Users table (for both users and admins)
+    AdminID VARCHAR(15),
     FOREIGN KEY (UserID) REFERENCES Users(UserID),  -- Link to Users table
+    FOREIGN KEY (AdminID) REFERENCES Admins(AdminID),  -- Link to Users table
     FOREIGN KEY (WalletID) REFERENCES Wallets(WalletID),         -- Link to Wallet table
     FOREIGN KEY (SubscriptionID) REFERENCES Subscriptions(SubscriptionID) -- Link to Subscription table
 );
@@ -33,13 +32,11 @@ CREATE TABLE Accounts
 CREATE TABLE Admins 
 (
     AdminID VARCHAR(15) PRIMARY KEY,    -- Unique ID (CNIC) for each admin
-    AccountID INT,                              -- Foreign key to Accounts table
 	Name VARCHAR(100) NOT NULL,               -- User's name
     DOB DATE NOT NULL,                         -- User's DOB
     Email VARCHAR(100) NOT NULL,              -- User's email
     PhoneNumber VARCHAR(15),                  -- User's phone number
-    JoinDate DATE NOT NULL,                   -- Join date of the user
-    FOREIGN KEY (AccountID) REFERENCES Accounts(AccountID)  -- Link to Accounts table (one-to-one relation with admin account)
+    JoinDate DATE NOT NULL                  -- Join date of the user
 );
 
 CREATE TABLE Stocks (
@@ -60,9 +57,10 @@ CREATE TABLE Currencies
     Amount DECIMAL(10, 2) DEFAULT 0              -- Amount of the currency
 );
 
-CREATE TABLE Wallets (
+CREATE TABLE Wallets 
+(
     WalletID VARCHAR(50) NOT NULL PRIMARY KEY,   -- Unique identifier for each wallet
-    UserID INT NOT NULL,                         -- Foreign key to Users table
+    UserID varchar(13) NOT NULL,                         -- Foreign key to Users table
     FOREIGN KEY (UserID) REFERENCES Users(UserID) -- Link to Users table
 );
 
@@ -78,7 +76,7 @@ CREATE TABLE Subscriptions
 -- For stocks
 CREATE TABLE UserStocks 
 (
-    UserID INT,                                   -- Foreign key to Users table
+    UserID varchar(13) NOT NULL,                                   -- Foreign key to Users table
     StockID INT,                                  -- Foreign key to Stocks table
     Quantity INT DEFAULT 0,                       -- Quantity of the stock owned
     PRIMARY KEY (UserID, StockID),                -- Composite primary key
@@ -89,7 +87,7 @@ CREATE TABLE UserStocks
 -- For currencies
 CREATE TABLE UserCurrencies 
 (
-    UserID INT,                                   -- Foreign key to Users table
+    UserID varchar(13) NOT NULL,                                   -- Foreign key to Users table
     CurrencyID INT,                               -- Foreign key to Currencies table
     Amount DECIMAL(10, 2) NOT NULL,               -- Amount of the currency owned
     PRIMARY KEY (UserID, CurrencyID),             -- Composite primary key
@@ -119,7 +117,7 @@ CREATE TABLE SystemCurrencies
 
 CREATE TABLE TransactionLogs 
 (
-    UserID INT,                                     -- Foreign key to the Users table
+    UserID varchar(13) NOT NULL,                                     -- Foreign key to the Users table
 	CurrencyCode VARCHAR(10) NOT NULL UNIQUE,
     Amount Decimal(10,2) Not NULL, 
     Type VARCHAR(10) NOT NULL,
@@ -127,3 +125,11 @@ CREATE TABLE TransactionLogs
     FOREIGN KEY (UserID) REFERENCES Users(UserID)   -- Link to Users table
 );
 
+ Delete From Users where UserId != "25";
+ Select * from Users;
+ Select * from accounts;
+ SELECT * FROM ADMINS;
+ SELECT * FROM SYSTEMSTOCKS;
+ 
+ DELETE FROM ACCOUNTS where adminID =  "1234512398765"; 
+ DELETE FROM ADMINS where adminID =  "1234512398765";

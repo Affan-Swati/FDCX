@@ -1,46 +1,85 @@
 package main_package;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 public class StockManager 
 {
-    private List<Stock> stockList;
+	private Map<String, Double> stockBalances;
+    private DBHandler dbHandler;
     
     public StockManager()
     {
-    	 this.stockList = new ArrayList<>();
+    	 this.stockBalances = new HashMap<>();
+    	 this.dbHandler = DBHandler.getInstance();
     }
     
-    public void addStock(Stock stock) 
+    public void addStockToSystem(Stock stock , double quantity)
     {
-        stockList.add(stock);
-    }
-    
-    public void removeStock(Stock stock) 
-    {
-        stockList.remove(stock);
-    }
-
-    public void viewStocks() 
-    {
-        System.out.println("Stocks in the system:");
-        for (Stock stock : stockList) 
+    	if (quantity < 0) 
         {
-            System.out.println(stock);
+            System.out.println("Quantity must be greater than zero!");
+            return;
+        }
+    	
+    	stockBalances.put(stock.getName(), stockBalances.getOrDefault(stock.getName(), 0.0) + quantity);
+    }
+    
+    public boolean removeStockFromSystem(Stock stock , double quantity)
+    {
+    	if (quantity < 0) 
+        {
+            System.out.println("Quantity must be greater than zero!");
+            return false;
+        }
+
+        if (!stockBalances.containsKey(stock.getName())) 
+        {
+            System.out.println("Stock not found in system: " + stock.getName());
+            return false;
+        }
+
+        double currentBalance = stockBalances.get(stock.getName());
+        if (currentBalance >= quantity) 
+        {
+        	stockBalances.put(stock.getName(), currentBalance - quantity);
+            System.out.println(quantity + " units of " + stock.getName() + " removed from account.");
+            return true;
+        } else {
+            System.out.println("Insufficient balance of " + stock.getName() + " in account.");
+            return false;
         }
     }
     
-    public void assignStockToUser(User user, Stock stock, int quantity) 
+    public boolean addStockToUser(User user , Stock stock , int quantity)
     {
-    	//TODO
+    	if(this.removeStockFromSystem(stock, quantity))
+    	{
+    		user.getAccount().addStock(stock, quantity);
+        	dbHandler.addUserStock(user.getCNIC(),stock.getName() , quantity);
+        	return true;
+    	}
+    	else
+    	{
+    		System.out.println("Not enough stocks in system!");
+    		return false;
+    	}
     }
     
-	public List<Stock> getStockList() {
-		return stockList;
-	}
-
-	public void setStockList(List<Stock> stockList) {
-		this.stockList = stockList;
-	}
+    public boolean removeStockFromUser(User user , Stock stock , int quantity)
+    {
+    	
+    	if(user.getAccount().removeStock(stock, quantity))
+    	{
+    		this.addStockToSystem(stock, quantity);
+        	dbHandler.removeUserStock(user.getCNIC(),stock.getName() , quantity);
+        	return true;
+    	}
+    	
+    	else
+    	{
+    		System.out.println("Not enough stocks in user: " + user.getCNIC() + " account!");
+    		return false;
+    	}
+    }
     
 }

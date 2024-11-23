@@ -80,7 +80,7 @@ CREATE TABLE UserStocks
 (
     UserID INT,                                   -- Foreign key to Users table
     StockID INT,                                  -- Foreign key to Stocks table
-    Quantity DECIMAL(10, 2) NOT NULL,             -- Quantity of the stock owned
+    Quantity INT DEFAULT 0,                       -- Quantity of the stock owned
     PRIMARY KEY (UserID, StockID),                -- Composite primary key
     FOREIGN KEY (UserID) REFERENCES Users(UserID),
     FOREIGN KEY (StockID) REFERENCES Stocks(StockID)
@@ -99,11 +99,13 @@ CREATE TABLE UserCurrencies
 
 CREATE TABLE SystemStocks 
 (
-    StockID INT AUTO_INCREMENT PRIMARY KEY,      -- Unique ID for each stock in the system
-    Name VARCHAR(100) NOT NULL,                  -- Stock's name (e.g., Apple, Tesla)
-    UnitPrice DECIMAL(10, 2) NOT NULL,           -- Stock's unit price in USD
-    Available BOOLEAN DEFAULT TRUE               -- Whether the stock is available for purchase
+    StockID INT AUTO_INCREMENT PRIMARY KEY,       -- Unique ID for each stock in the system
+    Name VARCHAR(100) NOT NULL,                   -- Stock's name (e.g., Apple, Tesla)
+    UnitPrice DECIMAL(10, 2) NOT NULL,            -- Stock's unit price in USD
+    Quantity INT DEFAULT 0,                       -- Quantity of the stock available
+    Available BOOLEAN DEFAULT TRUE                -- Whether the stock is available for purchase
 );
+
 
 CREATE TABLE SystemCurrencies 
 (

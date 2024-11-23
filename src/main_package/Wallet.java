@@ -23,7 +23,8 @@ public class Wallet
     // Add a currency to the wallet or increase its balance
     public void addCurrency(String currencyCode, double amount) 
     {
-        if (amount < 0) {
+        if (amount < 0) 
+        {
             System.out.println("Amount must be greater than zero!");
             return;
         }
@@ -34,7 +35,8 @@ public class Wallet
     // Remove a specific amount of a currency from the wallet
     public boolean removeCurrency(String currencyCode, double amount) 
     {
-        if (amount < 0) {
+        if (amount < 0) 
+        {
             System.out.println("Amount must be greater than zero!");
             return false;
         }

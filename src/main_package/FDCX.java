@@ -1,7 +1,7 @@
 package main_package;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map
+import java.util.Map;
 import java.time.*;
 
 
@@ -92,13 +92,81 @@ public class FDCX
     	return bankingService.getFiatExchangeRates();
     }
     
- // USE CASE : VIEW EXCHNAGE RATE 
+ // USE CASE : VIEW EXCHANGE RATE 
     public Map <String,Double> viewCryptoExchangeRates()
     {
     	return cryptoService.getCryptoExchangeRates();
     }
  
+    public boolean withdrawFunds(String type , User user , String currencyCode , double amount) // type fiat or crypto
+    {
+    	if("fiat".equals(type))
+    	{
+    		bankingService.sellFiat(user, currencyCode, amount);
+    		return true;
+    	}
+    	else if ("crypto".equals(type))
+    	{
+    		cryptoService.sellCrypto(user, currencyCode, amount);
+    		return true;
+    	}
+    	return false;
+    	
+    }
+    
+    public boolean depositFunds(String type , User user , String currencyCode , double amount) // type fiat or crypto
+    {
+    	if("fiat".equals(type))
+    	{
+    		bankingService.buyFiat(user, currencyCode, amount);
+    		return true;
+    	}
+    	else if ("crypto".equals(type))
+    	{
+    		cryptoService.buyCrypto(user, currencyCode, amount);
+    		return true;
+    	}
+    	
+    	return false;
+    	
+    }
+    
+    public boolean tradeFunds(String type , User fromUser , User toUser, String currencyCode , double amount) // type fiat or crypto
+    {
+    	if("fiat".equals(type))
+    	{
+    		bankingService.transferFiat(fromUser, toUser, currencyCode, amount);
+    		return true;
+    	}
+    	else if ("crypto".equals(type))
+    	{
+    		cryptoService.transferCrypto(fromUser, toUser, currencyCode, amount);
+    		return true;
+    	}
+    	return false;
+    	
+    }
+    
+    public void assignStockToUser(User user , Stock stock , int quantity)
+    {
+    	stockManager.addStockToUser(user, stock, quantity);
+    }
+    
+    public void removeStockFromUser(User user , Stock stock , int quantity)
+    {
+    	stockManager.removeStockFromUser(user, stock, quantity);
+    }
 
+    public boolean claimLoyaltyPoints()
+    {
+    	// TODO:
+    	return false;
+    }
+    
+    
+    
+    
+    
     // List all users
     public void listUsers() 
     {

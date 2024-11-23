@@ -2,7 +2,8 @@ package main_package;
 
 import java.sql.*;
 
-public class FBR {
+public class FBR 
+{
     private static final double DEFAULT_TAX = 7.5; // Default tax rate
     private static final String connectionString = "jdbc:mysql://localhost:3306/FBR"; // Database URL
     private static final String USER = "root"; // Database username

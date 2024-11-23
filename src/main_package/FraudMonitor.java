@@ -50,4 +50,20 @@ public class FraudMonitor // singleton
         this.isActive = false;
         System.out.println("Fraud Monitoring stopped.");
     }
+
+	public Queue<Anamoly> getAnamolies() {
+		return anamolies;
+	}
+
+	public void setAnamolies(Queue<Anamoly> anamolies) {
+		this.anamolies = anamolies;
+	}
+
+	public boolean isActive() {
+		return isActive;
+	}
+
+	public void setActive(boolean isActive) {
+		this.isActive = isActive;
+	}
 }

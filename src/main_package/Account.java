@@ -4,8 +4,7 @@ import java.util.*;
 public class Account 
 {
 	private String type; // "admin" , "user"
-    private List<Stock> stocks;
-    private List<Currency> currencies ;
+	private Map<String, Double> stockBalances;
     private Wallet wallet;
     private Subscription subscription;
     private int loyaltyPoints;
@@ -19,8 +18,7 @@ public class Account
     	 {
     		 this.wallet = new Wallet();
         	 this.subscription = new Subscription();
-        	 this.stocks = new ArrayList<>();
-        	 this.currencies = new ArrayList<>();
+        	 this.stockBalances = new HashMap<>();
         	 this.loyaltyPoints = 0;
     	 }
     	 
@@ -28,8 +26,7 @@ public class Account
     	 {
     		 this.wallet = null;
         	 this.subscription = null;
-        	 this.stocks = null;
-        	 this.currencies = null;
+        	 this.stockBalances = null;
         	 this.loyaltyPoints = -1;
     	 }
     	 
@@ -42,6 +39,41 @@ public class Account
     {
     	// TODO: use DB to get transaction logs for the user
     	return "";
+    }
+    
+    public void addStock(Stock stock , double quantity)
+    {
+    	if (quantity < 0) 
+        {
+            System.out.println("Quantity must be greater than zero!");
+            return;
+        }
+    	
+    	stockBalances.put(stock.getName(), stockBalances.getOrDefault(stock.getName(), 0.0) + quantity);
+    }
+    
+    public boolean removeStock(Stock stock , double quantity)
+    {
+    	if (quantity < 0) 
+        {
+            System.out.println("Quantity must be greater than zero!");
+            return false;
+        }
+
+        if (!stockBalances.containsKey(stock.getName())) {
+            System.out.println("Stock not found in account: " + stock.getName());
+            return false;
+        }
+
+        double currentBalance = stockBalances.get(stock.getName());
+        if (currentBalance >= quantity) {
+        	stockBalances.put(stock.getName(), currentBalance - quantity);
+            System.out.println(quantity + " units of " + stock.getName() + " removed from account.");
+            return true;
+        } else {
+            System.out.println("Insufficient balance of " + stock.getName() + " in account.");
+            return false;
+        }
     }
     
     public String getType() {
@@ -66,25 +98,7 @@ public class Account
     {
         return loyaltyPoints;
     }
-
-	public List<Stock> getStocks() {
-		return stocks;
-	}
-
-	public void setStocks(List<Stock> stocks) 
-	{
-		this.stocks = stocks;
-	}
-
-	public List<Currency> getCurrencies() {
-		return currencies;
-	}
-
-	public void setCurrencies(List<Currency> currencies) 
-	{
-		this.currencies = currencies;
-	}
-
+	
 	public Subscription getSubscription() {
 		return subscription;
 	}
@@ -122,6 +136,14 @@ public class Account
 	public void setPassword(String password) 
 	{
 		this.password = password;
+	}
+
+	public Map<String, Double> getStockBalances() {
+		return stockBalances;
+	}
+
+	public void setStockBalances(Map<String, Double> stockBalances) {
+		this.stockBalances = stockBalances;
 	}
 	
 }

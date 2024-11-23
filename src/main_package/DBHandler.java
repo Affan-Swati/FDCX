@@ -292,5 +292,178 @@ public class DBHandler // singleton
         return false;
     }
     
-    
+    // 1. Add stock to the system
+    public void addStockToSystem(String stockName, double unitPrice, int quantity) 
+    {
+        if (isStockExists(stockName)) 
+        {
+            // Update the quantity of the existing stock
+            String updateQuery = "UPDATE SystemStocks SET Quantity = Quantity + ? WHERE Name = ?";
+            try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
+                 PreparedStatement stmt = conn.prepareStatement(updateQuery)) {
+                stmt.setInt(1, quantity);
+                stmt.setString(2, stockName);
+                stmt.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        } else {
+            // Insert a new stock
+            String insertQuery = "INSERT INTO SystemStocks (Name, UnitPrice, Quantity) VALUES (?, ?, ?)";
+            try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
+                 PreparedStatement stmt = conn.prepareStatement(insertQuery)) {
+                stmt.setString(1, stockName);
+                stmt.setDouble(2, unitPrice);
+                stmt.setInt(3, quantity);
+                stmt.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    // 2. Remove stock from the system
+    public boolean removeStockFromSystem(String stockName, int quantity) 
+    {
+        // Check if sufficient stock exists in the system
+        if (!isSufficientSystemStock(stockName, quantity)) {
+            return false; // Not enough stock to remove
+        }
+
+        String updateQuery = "UPDATE SystemStocks SET Quantity = Quantity - ? WHERE Name = ?";
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(updateQuery)) {
+            stmt.setInt(1, quantity);
+            stmt.setString(2, stockName);
+            stmt.executeUpdate();
+            return true; // Successfully removed stock
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false; // Return false if an error occurred
+    }
+
+    // 3. Add stock to a user
+    public boolean addUserStock(String userId, String stockName, int quantity) 
+    {
+        // Check if sufficient stock exists in the system
+        if (!isSufficientSystemStock(stockName, quantity)) {
+            return false; // Not enough stock in the system
+        }
+
+        String insertQuery = "INSERT INTO UserStocks (UserID, StockID, Quantity) VALUES (?, (SELECT StockID FROM SystemStocks WHERE Name = ?), ?) " +
+                             "ON DUPLICATE KEY UPDATE Quantity = Quantity + ?";
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(insertQuery)) {
+            stmt.setString(1, userId); // UserID as String
+            stmt.setString(2, stockName);
+            stmt.setInt(3, quantity);
+            stmt.setInt(4, quantity);
+            stmt.executeUpdate();
+
+            // Update system stock quantity
+            removeStockFromSystem(stockName, quantity);
+            return true; // Successfully added stock to the user
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false; // Return false if an error occurred
+    }
+
+    // 4. Remove stock from a user
+    public boolean removeUserStock(String userId, String stockName, int quantity) 
+    {
+        // Check if the user has sufficient stock
+        if (!isSufficientUserStock(userId, stockName, quantity)) {
+            return false; // Not enough stock in the user's account
+        }
+
+        String updateQuery = "UPDATE UserStocks SET Quantity = Quantity - ? " +
+                             "WHERE UserID = ? AND StockID = (SELECT StockID FROM SystemStocks WHERE Name = ?)";
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(updateQuery)) {
+            stmt.setInt(1, quantity);
+            stmt.setString(2, userId);
+            stmt.setString(3, stockName);
+            stmt.executeUpdate();
+
+            // Update system stock quantity if removal is successful
+            addStockToSystem(stockName, getStockPriceByName(stockName), quantity);
+            return true; // Successfully removed user stock
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false; // Return false if an error occurred
+    }
+
+    // Helper Method: Check if a stock exists in the system
+    private boolean isStockExists(String stockName) 
+    {
+        String query = "SELECT COUNT(*) AS StockCount FROM SystemStocks WHERE Name = ?";
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, stockName);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("StockCount") > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false; // Return false if stock is not found or an error occurred
+    }
+
+    // Helper Method: Check if sufficient system stock is available
+    private boolean isSufficientSystemStock(String stockName, int quantity) 
+    {
+        String query = "SELECT Quantity FROM SystemStocks WHERE Name = ?";
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, stockName);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                int availableQuantity = rs.getInt("Quantity");
+                return availableQuantity >= quantity;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false; // Return false if stock is not found or an error occurred
+    }
+
+    // Helper Method: Check if the user has sufficient stock
+    private boolean isSufficientUserStock(String userId, String stockName, int quantity) 
+    {
+        String query = "SELECT Quantity FROM UserStocks WHERE UserID = ? AND StockID = (SELECT StockID FROM SystemStocks WHERE Name = ?)";
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, userId);
+            stmt.setString(2, stockName);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                int availableQuantity = rs.getInt("Quantity");
+                return availableQuantity >= quantity;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false; // Return false if stock is not found or an error occurred
+    }
+
+    // Helper Method: Get stock price by name
+    private double getStockPriceByName(String stockName) 
+    {
+        String query = "SELECT UnitPrice FROM SystemStocks WHERE Name = ?";
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, stockName);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getDouble("UnitPrice");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0.0; // Return 0.0 if stock is not found or an error occurred
+    }
 }

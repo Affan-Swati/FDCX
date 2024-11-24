@@ -116,11 +116,11 @@ public class Subscription
         this.type = type;
     }
 
-    public float getPrice() {
-        return (float) price;
+    public double getPrice() {
+        return price;
     }
 
-    public void setPrice(float price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 

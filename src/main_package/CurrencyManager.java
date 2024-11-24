@@ -201,7 +201,13 @@ public class CurrencyManager // singleton
             System.out.println(c);
         }
     }
-
+    
+    
+    public void loadCurrency(Currency currency)
+    {
+    	this.currencyList.add(currency);
+    }
+    
 	public List<Currency> getCurrencyList() {
 		return currencyList;
 	}

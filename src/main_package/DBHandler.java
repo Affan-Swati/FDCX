@@ -159,17 +159,21 @@ public class DBHandler // singleton
     }
 
  
-    public Map<String, Double> getFiatExchangeRates() 
+    public List<Pair<String,Double>> getFiatExchangeRates() 
     {
     	  String query = "SELECT CurrencyCode, RateAgainstUSD FROM SystemCurrencies WHERE Available = TRUE AND Type = ?";
-    	  Map<String, Double> exchangeRates = new HashMap<>();
+    	  List<Pair<String,Double>> exchangeRates = new ArrayList<>();
+    	  
     	  try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
-    	       PreparedStatement stmt = conn.prepareStatement(query)) {
-    	    stmt.setString(1, "fiat"); // Set the type filter to "fiat"
+    	       PreparedStatement stmt = conn.prepareStatement(query)) 
+    	  {
+    	    stmt.setString(1, "Fiat"); // Set the type filter to "fiat"
     	    ResultSet rs = stmt.executeQuery();
 
-    	    while (rs.next()) {
-    	      exchangeRates.put(rs.getString("CurrencyCode"), rs.getDouble("RateAgainstUSD"));
+    	    while (rs.next()) 
+    	    {
+    	    	Pair<String,Double> pair = new Pair<String,Double>(rs.getString("CurrencyCode"), rs.getDouble("RateAgainstUSD"));
+    	    	exchangeRates.add(pair);
     	    }
     	  } catch (SQLException e) {
     	    e.printStackTrace();
@@ -177,18 +181,20 @@ public class DBHandler // singleton
     	  return exchangeRates;
     	}
     
-    public Map<String, Double> getCryptoExchangeRates() 
+    public List<Pair<String,Double>> getCryptoExchangeRates() 
     {
     	  String query = "SELECT CurrencyCode, RateAgainstUSD FROM SystemCurrencies WHERE Available = TRUE AND Type = ?";
-	  	  Map<String, Double> exchangeRates = new HashMap<>();
+    	  List<Pair<String,Double>> exchangeRates = new ArrayList<>();
+    	  
 	  	  try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
 	  	       PreparedStatement stmt = conn.prepareStatement(query)) {
-	  	    stmt.setString(1, "crypto");
+	  	    stmt.setString(1, "Crypto");
 	  	    ResultSet rs = stmt.executeQuery();
 	
 	  	    while (rs.next()) 
 	  	    {
-	  	      exchangeRates.put(rs.getString("CurrencyCode"), rs.getDouble("RateAgainstUSD"));
+	  	    	Pair<String,Double> pair = new Pair<String,Double>(rs.getString("CurrencyCode"), rs.getDouble("RateAgainstUSD"));
+    	    	exchangeRates.add(pair);
 	  	    }
 	  	  } catch (SQLException e) {
 	  	    e.printStackTrace();
@@ -558,22 +564,26 @@ public class DBHandler // singleton
         return false; // Return false if stock is not found or an error occurred
     }
 
-    // Helper Method: Get stock price by name
-    private double getStockPriceByName(String stockName) 
+    // Loyalty Points
+    
+    public void updateUserLoyaltyPoints(String userId, int amount ,boolean isIncrease)
     {
-        String query = "SELECT UnitPrice FROM SystemStocks WHERE Name = ?";
+
+        String updateQuery = "UPDATE Accounts SET LoyaltyPoints = LoyaltyPoints " + (isIncrease ? "+" : "-") + " ? WHERE UserID = ?";
         try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setString(1, stockName);
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return rs.getDouble("UnitPrice");
-            }
-        } catch (SQLException e) {
+             PreparedStatement stmt = conn.prepareStatement(updateQuery)) {
+
+            stmt.setDouble(1, amount);
+            stmt.setString(2, userId);
+            stmt.executeUpdate();
+
+        } catch (SQLException e) 
+        {
             e.printStackTrace();
         }
-        return 0.0; // Return 0.0 if stock is not found or an error occurred
     }
+    
+    
     
     // Subscription management methods
     

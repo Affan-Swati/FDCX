@@ -1,6 +1,6 @@
 package main_package;
 
-import java.util.Map;
+import java.util.List;
 
 public class BankingService 
 {
@@ -14,7 +14,7 @@ public class BankingService
 		currencyManager = CurrencyManager.getInstance();
 	}
 	
-	public Map<String, Double> getFiatExchangeRates() 
+	public List<Pair<String,Double>> getFiatExchangeRates() 
 	{ 
 	    return dbHandler.getFiatExchangeRates();
 	}

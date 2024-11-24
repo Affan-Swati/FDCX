@@ -58,7 +58,7 @@ public class FDCX
         this.createAdminAccount(admin, username,password);
         System.out.println("Admin added successfully: " + admin);
     }
-    
+     
     // returns - > 0 for successfull login , 1 for username doesn't exist , 2 for password incorrect
     public int userLogin(String username , String password) 
     {
@@ -148,13 +148,13 @@ public class FDCX
     }
     
     // USE CASE : VIEW EXCHNAGE RATE 
-    public Map <String,Double> viewFiatExchangeRates()
+    public List<Pair<String,Double>> viewFiatExchangeRates()
     {
     	return bankingService.getFiatExchangeRates();
     }
     
  // USE CASE : VIEW EXCHANGE RATE 
-    public Map <String,Double> viewCryptoExchangeRates()
+    public List<Pair<String,Double>> viewCryptoExchangeRates()
     {
     	return cryptoService.getCryptoExchangeRates();
     }
@@ -185,6 +185,7 @@ public class FDCX
     		bankingService.buyFiat(user, currencyCode, amount);
     		this.logTransaction(user, currencyCode, amount, type + " bought");
     		user.getAccount().setLoyaltyPoints(user.getAccount().getLoyaltyPoints() + 10);
+    		dbHandler.updateUserLoyaltyPoints(user.getCNIC(), 10, true);
     		return true;
     	}
     	else if ("Crypto".equals(type))
@@ -192,6 +193,7 @@ public class FDCX
     		cryptoService.buyCrypto(user, currencyCode, amount);
     		this.logTransaction(user, currencyCode, amount, type + " bought");
     		user.getAccount().setLoyaltyPoints(user.getAccount().getLoyaltyPoints() + 10);
+    		dbHandler.updateUserLoyaltyPoints(user.getCNIC(), 10, true);
     		return true;
     	}
     	
@@ -233,6 +235,7 @@ public class FDCX
     {
     	stockManager.addStockToUser(user, stock, quantity);
     	user.getAccount().setLoyaltyPoints(user.getAccount().getLoyaltyPoints() + 10);
+    	dbHandler.updateUserLoyaltyPoints(user.getCNIC(), 10, true);
     	this.logTransaction(user, stock.getName(), quantity, " stock bought");
     }
     
@@ -254,6 +257,7 @@ public class FDCX
     	
     	
     	user.getAccount().setLoyaltyPoints(0);
+    	dbHandler.updateUserLoyaltyPoints(user.getCNIC(), points, false);
     	
     	if(!user.getAccount().getSubscription().getType().equals("cancelled"))
     	{
@@ -300,7 +304,7 @@ public class FDCX
     	return dbHandler.getTransactionHistory(userId);
     }
     
-    public Pair<Map<String,Integer>, Map<String , Double>> getWallet(String userId)
+    public Pair<List<Pair<String,Integer>>,List<Pair<String,Double>>> getWallet(String userId)
     {
     	if(!isUser(userId))
     	{
@@ -310,7 +314,10 @@ public class FDCX
     	
     	User user = getUser(userId);
     	
-    	return new Pair<Map<String,Integer>,Map<String,Double>>(user.getAccount().getStockBalances() ,user.getAccount().getWallet().getCurrencyBalances());
+    	List<Stock> stockList = stockManager.getStocks();
+    	List<Currency> currencyList = CurrencyManager.getInstance().getCurrencyList();
+    	
+    	return new Pair<List<Pair<String,Integer>>,List<Pair<String,Double>>> (user.getAccount().getOwnedStockList(stockList),user.getAccount().getWallet().getOwnedCurrenciesList(currencyList));
     }
     
     public boolean predictStockTrend(String stockName)
@@ -400,6 +407,23 @@ public class FDCX
     	return FBR.generateTaxReport(CNIC);
     }
    
+    // Loading from Db 
+    
+    public void loadUser(User user)
+    {
+    	users.add(user);
+    }
+    
+    public void loadAdmin(Admin admin)
+    {
+    	admins.add(admin);
+    }
+    
+    public void loadLog(TransactionLog log)
+    {
+    	transactionLogs.add(log);
+    }
+    
     // List all users
     public void listUsers() 
     {

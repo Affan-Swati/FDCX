@@ -5,6 +5,8 @@ import org.junit.Test;
 import java.time.*;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 
 public class UnitTesting 
 {	
@@ -209,32 +211,170 @@ public class UnitTesting
 //		}
 //	}
 	
-	@Test
-	public void subscriptionTesting()
-	{
-		FDCX fdcx = FDCX.getInstance();
-		
-		fdcx.addAdmin("Azlan Awan", "azlan.awan@gmail.com", "1234512398987", "+923335672345", LocalDate.of(2023, 04, 27),"azlan","123");
-		fdcx.registerUser("Affan Ahmad", "affanswati12@gmail.com", "3740583626159", "+923339464521", LocalDate.of(2004, 04, 12));
-		User user = fdcx.getUser("3740583626159");
-		fdcx.verifyUser(user);
-		fdcx.createUserAccount(user,"affan","123");
-
-		
-		fdcx.addCurrencyToSystem("Dollar", "USD", 1.0, "Fiat", 20000);
-		fdcx.addCurrencyToSystem("Pound", "GBP", 0.85, "Fiat", 10000);
-		fdcx.addCurrencyToSystem("Bitcoin", "BTC", 0.01, "Crypto", 18);
-		
-		DBHandler.getInstance().updateUserBalance(user.getCNIC(), "Dollar", "USD", 1.0, 200000, "Fiat", true);
-		user.getAccount().getWallet().addCurrency("USD", 200000);
-		
-		fdcx.depositFunds("Fiat", user, "GBP", 2000);
-		fdcx.depositFunds("Crypto", user, "BTC", 3);
-		
-		fdcx.subscribe(user, "monthly");
-		
-		
-	}
+//	@Test
+//	public void subscriptionTesting()
+//	{
+//		FDCX fdcx = FDCX.getInstance();
+//		
+//		fdcx.addAdmin("Azlan Awan", "azlan.awan@gmail.com", "1234512398987", "+923335672345", LocalDate.of(2023, 04, 27),"azlan","123");
+//		fdcx.registerUser("Affan Ahmad", "affanswati12@gmail.com", "3740583626159", "+923339464521", LocalDate.of(2004, 04, 12));
+//		User user = fdcx.getUser("3740583626159");
+//		fdcx.verifyUser(user);
+//		fdcx.createUserAccount(user,"affan","123");
+//
+//		
+//		fdcx.addCurrencyToSystem("Dollar", "USD", 1.0, "Fiat", 20000);
+//		fdcx.addCurrencyToSystem("Pound", "GBP", 0.85, "Fiat", 10000);
+//		fdcx.addCurrencyToSystem("Bitcoin", "BTC", 0.01, "Crypto", 18);
+//		
+//		DBHandler.getInstance().updateUserBalance(user.getCNIC(), "Dollar", "USD", 1.0, 200000, "Fiat", true);
+//		user.getAccount().getWallet().addCurrency("USD", 200000);
+//		
+//		fdcx.depositFunds("Fiat", user, "GBP", 2000);
+//		fdcx.depositFunds("Crypto", user, "BTC", 3);
+//		
+//		fdcx.subscribe(user, "monthly");
+//		
+//		
+//	}
 	
+	/* FDCX FACTORY TESTING */ 
+	
+//	@Test
+//	public void AddAdmins()
+//	{
+//		FDCXFactory.getInstance().initializeSystem();
+//		
+//		FDCX fdcx = FDCX.getInstance();
+//		
+//		fdcx.addAdmin("Azlan Awan", "azlan.awan@gmail.com", "1234512398987", "+923335672345", LocalDate.of(2023, 04, 27),"azlan","123");	
+//	}
+	
+//	@Test
+//	public void LoadAdmins()
+//	{
+//		FDCXFactory.getInstance().initializeSystem();
+//		
+//		FDCX fdcx = FDCX.getInstance();
+//		
+//		System.out.println(fdcx.getAdmin("1234512398987").getAccount().getUsername());	
+//	}
+	
+//	@Test
+//	public void AddUsers()
+//	{
+//		FDCXFactory.getInstance().initializeSystem();
+//		FDCX fdcx = FDCX.getInstance();
+//		
+//		fdcx.addAdmin("Azlan Awan", "azlan.awan@gmail.com", "1234512398987", "+923335672345", LocalDate.of(2023, 04, 27),"azlan","123");
+//		
+//		fdcx.registerUser("Affan Ahmad", "affanswati12@gmail.com", "3740583626159", "+923339464521", LocalDate.of(2004, 04, 12));
+//		User user = fdcx.getUser("3740583626159");
+//		fdcx.verifyUser(user);
+//		fdcx.createUserAccount(user,"affan","123");
+//		
+//		fdcx.addCurrencyToSystem("Dollar", "USD", 1.0, "Fiat", 20000);
+//		fdcx.addCurrencyToSystem("Pound", "GBP", 0.85, "Fiat", 10000);
+//		fdcx.addCurrencyToSystem("Canadian Dollar", "CAD", 1.8, "Fiat", 20000);
+//		fdcx.addCurrencyToSystem("Bitcoin", "BTC", 0.01, "Crypto", 18);
+//		fdcx.addCurrencyToSystem("Etherium", "ETH", 0.03, "Crypto", 10);
+//		
+//		DBHandler.getInstance().updateUserBalance(user.getCNIC(), "Dollar", "USD", 1.0, 200000, "Fiat", true);
+//		user.getAccount().getWallet().addCurrency("USD", 200000);
+//		
+//		fdcx.depositFunds("Fiat", user, "GBP", 2000);
+//		fdcx.depositFunds("Crypto", user, "BTC", 3);
+//		fdcx.subscribe(user, "quarterly");
+//		
+//		fdcx.registerUser("Adil Nadeem", "adil.nadeem@gmail.com", "3740583620979", "+923339121521", LocalDate.of(2002, 9, 27));
+//		User user_2 = fdcx.getUser("3740583620979");
+//		fdcx.verifyUser(user_2);
+//		fdcx.createUserAccount(user_2,"adil","123");
+//		
+//		
+//		fdcx.registerUser("Shayaan Khalid", "shayaan.khalid@gmail.com", "3740654620970", "+923339987521", LocalDate.of(2005, 3, 30));
+//		User user_3 = fdcx.getUser("3740654620970");
+//		fdcx.verifyUser(user_3);
+//	}
+////	
+//	@Test
+//	public void LoadUsers()
+//	{
+//		FDCXFactory.getInstance().initializeSystem();
+//		
+//		FDCX fdcx = FDCX.getInstance();
+//		
+//		System.out.println(fdcx.getUser("3740583626159").getAccount().getWallet().getCurrencyBalance("USD") + " points-> " + fdcx.getUser("3740583626159").getAccount().getLoyaltyPoints());
+//		System.out.println(fdcx.getUser("3740583620979").getAccount().getPassword());
+//		
+//
+//		if(fdcx.getUser("3740654620970").getAccount() == null)
+//			System.out.println(fdcx.getUser("3740654620970").getName() + " has no account created!");
+//		
+//		
+//		
+//	}
+	
+//	@Test
+//	public void AddSystemStockAndCurrencies()
+//	{
+//		FDCXFactory.getInstance().initializeSystem();
+//		
+//		FDCX fdcx = FDCX.getInstance();
+//		
+//		fdcx.addAdmin("Azlan Awan", "azlan.awan@gmail.com", "1234512398987", "+923335672345", LocalDate.of(2023, 04, 27),"azlan","123");
+//		
+//		
+//		fdcx.addStockToSystem("Tesla", 20.0, 20);
+//		fdcx.addStockToSystem("SpaceX", 40.0, 38);
+//		fdcx.addStockToSystem("Apple", 80.0, 53);
+//		
+//		fdcx.addCurrencyToSystem("Dollar", "USD", 1.0, "Fiat", 20000);
+//		fdcx.addCurrencyToSystem("Pound", "GBP", 0.85, "Fiat", 10000);
+//		fdcx.addCurrencyToSystem("Canadian Dollar", "CAD", 1.8, "Fiat", 20000);
+//		fdcx.addCurrencyToSystem("Bitcoin", "BTC", 0.01, "Crypto", 18);
+//		fdcx.addCurrencyToSystem("Etherium", "ETH", 0.03, "Crypto", 10);
+//		
+//	}
+	
+//	@Test
+//	public void LoadSystemStockAndCurrencies()
+//	{
+//		FDCXFactory.getInstance().initializeSystem();
+//		
+//		FDCX fdcx = FDCX.getInstance();
+//		
+//		List<Pair<String,Double>> listCrypto = fdcx.viewCryptoExchangeRates();
+//		List<Pair<String,Double>> listFiat = fdcx.viewFiatExchangeRates();
+//		
+//		for(Pair<String,Double> p : listCrypto)
+//		{
+//			System.out.println("CryptoCode: " + p.getFirst() + " , Rate(Against USD): " + p.getSecond());
+//		}
+//		
+//		for(Pair<String,Double> p : listFiat)
+//		{
+//			System.out.println("FiatCode: " + p.getFirst() + " , Rate(Against USD): " + p.getSecond());
+//		}
+//	
+//	}
+//	
+//	@Test
+//	public void LoadTransactionLogs()
+//	{
+//		FDCXFactory.getInstance().initializeSystem();
+//		
+//		FDCX fdcx = FDCX.getInstance();
+//		
+//
+//		List<TransactionLog> logs = fdcx.getTransactionLogs();
+//		
+//		for(TransactionLog l : logs)
+//		{
+//			System.out.println(l.getUser().getCNIC() + " " + l.getDetails() + " "+l.getTransactionDateTime());
+//		}
+//	
+//	}
+//	
 	
 }

@@ -1,6 +1,8 @@
 package main_package;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -78,6 +80,23 @@ public class Wallet
         }
     }
 
+    
+	public List<Pair<String,Double>> getOwnedCurrenciesList(List<Currency> systemCurrencies)
+	{
+		List<Pair<String,Double>> currencyList = new ArrayList<>();
+		
+		for(Currency c : systemCurrencies)
+		{
+			if(currencyBalances.containsKey(c.getCurrencyCode()))
+			{
+				currencyList.add(new Pair<String,Double>(c.getCurrencyCode(),currencyBalances.get(c.getCurrencyCode())));
+			}
+		}
+		
+		
+		return currencyList;
+	}
+    
 	public Map<String, Double> getCurrencyBalances() {
 		return currencyBalances;
 	}

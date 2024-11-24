@@ -133,6 +133,22 @@ public class Account
 	{
 		this.password = password;
 	}
+	
+	public List<Pair<String,Integer>> getOwnedStockList(List<Stock> systemStocks)
+	{
+		List<Pair<String,Integer>> stockList = new ArrayList<>();
+		
+		for(Stock s : systemStocks)
+		{
+			if(stockBalances.containsKey(s.getName()))
+			{
+				stockList.add(new Pair<String,Integer>(s.getName(),stockBalances.get(s.getName())));
+			}
+		}
+		
+		
+		return stockList;
+	}
 
 	public Map<String, Integer> getStockBalances() {
 		return stockBalances;

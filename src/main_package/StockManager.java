@@ -185,6 +185,11 @@ public class StockManager
     	}
     }
     
+    public void loadStock(Stock stock)
+    {
+    	this.stocks.add(stock);
+    }
+    
     public List<Stock> getStocks() 
     {
         return stocks;

@@ -1,6 +1,6 @@
 package main_package;
 
-import java.util.Map;
+import java.util.List;
 
 public class CryptoService 
 {
@@ -14,7 +14,7 @@ public class CryptoService
 		currencyManager = CurrencyManager.getInstance();
 	}
 	
-	public Map<String, Double> getCryptoExchangeRates() 
+	public List<Pair<String,Double>> getCryptoExchangeRates() 
 	{ 
 	    return dbHandler.getCryptoExchangeRates();
 	}

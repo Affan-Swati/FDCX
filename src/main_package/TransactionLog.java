@@ -47,4 +47,9 @@ public class TransactionLog
 	public void setDetails(String details) {
 		this.details = details;
 	}
+
+	public void setTransactionDateTime(String transactionDateTime) 
+	{
+		this.transactionDateTime = transactionDateTime;
+	}
 }

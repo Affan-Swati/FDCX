@@ -113,14 +113,14 @@ public class FDCX
     
     public boolean depositFunds(String type , User user , String currencyCode , double amount) // type fiat or crypto
     {
-    	if("fiat".equals(type))
+    	if("Fiat".equals(type))
     	{
     		bankingService.buyFiat(user, currencyCode, amount);
     		this.logTransaction(user, currencyCode, amount, type + " bought");
     		user.getAccount().setLoyaltyPoints(user.getAccount().getLoyaltyPoints() + 10);
     		return true;
     	}
-    	else if ("crypto".equals(type))
+    	else if ("Crypto".equals(type))
     	{
     		cryptoService.buyCrypto(user, currencyCode, amount);
     		this.logTransaction(user, currencyCode, amount, type + " bought");
@@ -134,14 +134,14 @@ public class FDCX
     
     public boolean tradeFunds(String type , User fromUser , User toUser, String currencyCode , double amount) // type fiat or crypto
     {
-    	if("fiat".equals(type))
+    	if("Fiat".equals(type))
     	{
     		bankingService.transferFiat(fromUser, toUser, currencyCode, amount);
     		this.logTransaction(fromUser, currencyCode, amount, type + " trade out");
     		this.logTransaction(toUser, currencyCode, amount, type + " trade in");
     		return true;
     	}
-    	else if ("crypto".equals(type))
+    	else if ("Crypto".equals(type))
     	{
     		cryptoService.transferCrypto(fromUser, toUser, currencyCode, amount);
     		this.logTransaction(fromUser, currencyCode, amount, type + " trade out");

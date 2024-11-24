@@ -152,6 +152,16 @@ public class FDCX
     	
     }
     
+    public void exchangeFiat(String fromCurrencyCode , String toCurrencyCode , User user , double amount) // exchange is free of cost too
+    {
+    	bankingService.exchangeFiat(fromCurrencyCode, toCurrencyCode, user, amount);
+    }
+    
+    public void exchangeCrypto(String fromCryptoCode , String toCryptoCode , User user , double amount) // exchange is free of cost too
+    {
+    	cryptoService.exchangeCrypto(fromCryptoCode, toCryptoCode, user, amount);
+    }
+    
     public void assignStockToUser(User user , Stock stock , int quantity)
     {
     	stockManager.addStockToUser(user, stock, quantity);

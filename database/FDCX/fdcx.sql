@@ -91,9 +91,9 @@ CREATE TABLE UserCurrencies
     CurrencyID INT AUTO_INCREMENT,   -- Unique ID for each currency in the system
     UserID varchar(13) NOT NULL,                                   -- Foreign key to Users table
     CurrencyName VARCHAR(100) NOT NULL,          -- Name of the currency (e.g., USD, BTC)
-    CurrencyCode VARCHAR(10) NOT NULL UNIQUE,    -- Code for the currency (e.g., USD, BTC)
+    CurrencyCode VARCHAR(10) NOT NULL ,    -- Code for the currency (e.g., USD, BTC)
     RateAgainstUSD DECIMAL(10, 2) NOT NULL,      -- Exchange rate compared to USD
-	Amount INT DEFAULT 0,                       -- Quantity of the stock available
+	Amount DECIMAL(10,2) DEFAULT 0,              
     Type varchar(10)  NOT NULL,        -- Type of currency: "Fiat" or "Crypto"
     PRIMARY KEY (CurrencyID),                    -- Composite primary key
     FOREIGN KEY (UserID) REFERENCES Users(UserID)

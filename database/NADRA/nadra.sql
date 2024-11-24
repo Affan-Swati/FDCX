@@ -16,6 +16,6 @@ CREATE TABLE CitizenInformation
 -- ENTERIES FOR NADRA DATABASE
 
 INSERT INTO CitizenInformation (CNIC, Name, DateOfBirth,Address) VALUES ("3740583626159","Affan Ahmad","2004-04-12","I-8/2 Islamabad"); 
+INSERT INTO CitizenInformation (CNIC, Name, DateOfBirth,Address) VALUES ("3740583620979","Adil Nadeem","2002-09-27","I-8/2 Islamabad"); 
 
 SELECT * FROM CitizenInformation;
-SELECT * FROM CitizenInformation WHERE CNIC = "3740583626159";

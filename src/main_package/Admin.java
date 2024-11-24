@@ -11,7 +11,7 @@ public class Admin extends User
 	 {
 		 super(name ,email,CNIC,phoneNumber,DOB);
 		 fraudMonitor = new FraudMonitor();
-		 stockManager = new StockManager();
+		 stockManager = StockManager.getInstance();
 		 currencyManager = CurrencyManager.getInstance();
 	 }
 	 

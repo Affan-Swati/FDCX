@@ -21,7 +21,7 @@ public class FDCX
         users = new ArrayList<>();
         admins = new ArrayList<>();
         transactionLogs = new ArrayList<>();
-        stockManager = new StockManager();
+        stockManager = StockManager.getInstance();
         nadra = new NADRA();
         dbHandler = DBHandler.getInstance();
         bankingService = new BankingService();

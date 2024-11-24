@@ -454,21 +454,22 @@ public class DBHandler // singleton
     }
 
     // 3. Add stock to a user
-    public boolean addUserStock(String userId, String stockName, int quantity) 
+    public boolean addUserStock(String userId, String stockName, int quantity , double unitPrice) 
     {
         // Check if sufficient stock exists in the system
         if (!isSufficientSystemStock(stockName, quantity)) {
             return false; // Not enough stock in the system
         }
 
-        String insertQuery = "INSERT INTO UserStocks (UserID, StockID, Quantity) VALUES (?, (SELECT StockID FROM SystemStocks WHERE Name = ?), ?) " +
+        String insertQuery = "INSERT INTO UserStocks (UserID, Name, UnitPrice ,Quantity) VALUES (?, ?, ? ,?) " +
                              "ON DUPLICATE KEY UPDATE Quantity = Quantity + ?";
         try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
              PreparedStatement stmt = conn.prepareStatement(insertQuery)) {
             stmt.setString(1, userId); // UserID as String
             stmt.setString(2, stockName);
-            stmt.setInt(3, quantity);
+            stmt.setDouble(3, unitPrice);
             stmt.setInt(4, quantity);
+            stmt.setInt(5, quantity);
             stmt.executeUpdate();
 
             // Update system stock quantity
@@ -489,7 +490,7 @@ public class DBHandler // singleton
         }
 
         String updateQuery = "UPDATE UserStocks SET Quantity = Quantity - ? " +
-                             "WHERE UserID = ? AND StockID = (SELECT StockID FROM SystemStocks WHERE Name = ?)";
+                             "WHERE UserID = ? AND Name = ?";
         try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
              PreparedStatement stmt = conn.prepareStatement(updateQuery)) {
             stmt.setInt(1, quantity);
@@ -544,7 +545,7 @@ public class DBHandler // singleton
     // Helper Method: Check if the user has sufficient stock
     private boolean isSufficientUserStock(String userId, String stockName, int quantity) 
     {
-        String query = "SELECT Quantity FROM UserStocks WHERE UserID = ? AND StockName = ?";
+        String query = "SELECT Quantity FROM UserStocks WHERE UserID = ? AND  Name = ?";
         try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
              PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, userId);

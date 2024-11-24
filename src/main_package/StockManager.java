@@ -6,13 +6,24 @@ public class StockManager
 	private List<Stock> stocks;
     private DBHandler dbHandler;
     private CurrencyManager currencyManager;
+    private static StockManager instance;
     
-    public StockManager()
+    private StockManager()
     {
     	 this.stocks = new ArrayList<>();
     	 this.dbHandler = DBHandler.getInstance();
     	 this.currencyManager = CurrencyManager.getInstance();
     }
+    
+   public static StockManager getInstance()
+   {
+	   if(instance == null)
+	   {
+		   instance = new StockManager();
+	   }
+	   
+	   return instance;
+   }
     
     public boolean predictStockTrend(String stockName) 
     {
@@ -125,7 +136,7 @@ public class StockManager
     		}
     		index++;
     	}
-    	
+
     	index = -1; // not found
     	return index;
     }
@@ -141,7 +152,7 @@ public class StockManager
     	if(this.removeStockFromSystem(stock.getName(), quantity))
     	{
     		user.getAccount().addStock(stock, quantity);
-        	dbHandler.addUserStock(user.getCNIC(),stock.getName() , quantity);
+        	dbHandler.addUserStock(user.getCNIC(),stock.getName() , quantity,stock.getUnitPrice());
         	currencyManager.removeCurrencyFromWallet(user.getAccount().getWallet(), "USD", stock.getUnitPrice() * quantity);
           	dbHandler.updateUserBalance(user.getCNIC(), "Dollar","USD", 1.0 ,stock.getUnitPrice() * quantity,"Fiat",false);
         	currencyManager.addCurrency("Dollar", "USD", 1.0 , "fiat", stock.getUnitPrice() * quantity);

@@ -77,6 +77,8 @@ public class UnitTesting
 	@Test
 	public void assignStockToUser()
 	{
+		
+		// TODO: BUG: STOCK REMOVING AND ADDING TWICE TO THE SYSTEM
 		FDCX fdcx = new FDCX();
 		fdcx.addAdmin("Azlan Awan", "azlan.awan@gmail.com", "1234512398987", "+923335672345", LocalDate.of(2023, 04, 27),"azlan","123");
 		fdcx.registerUser("Affan Ahmad", "affanswati12@gmail.com", "3740583626159", "+923339464521", LocalDate.of(2004, 04, 12));
@@ -94,7 +96,7 @@ public class UnitTesting
 		
 		Stock stock = new Stock("SpaceX" , 10.0 , 0);
 		fdcx.assignStockToUser(user, stock, 7);
-		//fdcx.removeStockFromUser(user, stock, 5);
+//		fdcx.removeStockFromUser(user, stock, 5);
 	}
 	
 	

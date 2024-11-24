@@ -76,12 +76,12 @@ CREATE TABLE Subscriptions
 -- For stocks
 CREATE TABLE UserStocks 
 (
-    UserID varchar(13) NOT NULL,                                   -- Foreign key to Users table
-    StockID INT,                                  -- Foreign key to Stocks table
-    Quantity INT DEFAULT 0,                       -- Quantity of the stock owned
-    PRIMARY KEY (UserID, StockID),                -- Composite primary key
-    FOREIGN KEY (UserID) REFERENCES Users(UserID),
-    FOREIGN KEY (StockID) REFERENCES Stocks(StockID)
+	UserID varchar(13) NOT NULL,
+    StockID INT AUTO_INCREMENT PRIMARY KEY,       -- Unique ID for each stock in the system
+    Name VARCHAR(100) NOT NULL,                   -- Stock's name (e.g., Apple, Tesla)
+    UnitPrice DECIMAL(10, 2) NOT NULL,            -- Stock's unit price in USD
+    Quantity INT DEFAULT 0,                       -- Quantity of the stock available
+    Available BOOLEAN DEFAULT TRUE                -- Whether the stock is available for purchase
 );
 
 -- For currencies
@@ -120,10 +120,11 @@ CREATE TABLE SystemCurrencies
 	 PRIMARY KEY (CurrencyID)
 );
 
+
 CREATE TABLE TransactionLogs 
 (
     UserID varchar(13) NOT NULL,                                     -- Foreign key to the Users table
-	CurrencyCode VARCHAR(10) NOT NULL UNIQUE,
+	CurrencyCode VARCHAR(10) NOT NULL ,
     Amount Decimal(10,2) Not NULL, 
     Type VARCHAR(20) NOT NULL,
     TransactionDateTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Date and time of the transaction
@@ -140,9 +141,9 @@ INSERT INTO UserCurrenies (UserID, CurrencyName, CurrencyCode,RateAgainstUSD,Amo
  SELECT * FROM USERCURRENCIES;
  Select * From SystemCurrencies;
   
-Delete from SystemCurrencies;
+Delete from SystemStocks;
 DELETE from TransactionLogs;
-Delete from UserCurrencies ;
+Delete from UserStocks ;
 Delete from SystemCurrencies;
 Delete from UserCurrencies ;
 DELETE FROM SYSTEMSTOCKS ; 

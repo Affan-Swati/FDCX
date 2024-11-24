@@ -472,8 +472,6 @@ public class DBHandler // singleton
             stmt.setInt(5, quantity);
             stmt.executeUpdate();
 
-            // Update system stock quantity
-            removeStockFromSystem(stockName, quantity);
             return true; // Successfully added stock to the user
         } catch (SQLException e) {
             e.printStackTrace();
@@ -498,8 +496,6 @@ public class DBHandler // singleton
             stmt.setString(3, stockName);
             stmt.executeUpdate();
 
-            // Update system stock quantity if removal is successful
-            addStockToSystem(stockName, getStockPriceByName(stockName), quantity);
             return true; // Successfully removed user stock
         } catch (SQLException e) {
             e.printStackTrace();

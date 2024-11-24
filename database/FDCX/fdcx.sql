@@ -140,6 +140,7 @@ INSERT INTO UserCurrenies (UserID, CurrencyName, CurrencyCode,RateAgainstUSD,Amo
  SELECT * FROM USERSTOCKS;
  SELECT * FROM USERCURRENCIES;
  Select * From SystemCurrencies;
+ SELECT * FROM TRANSACTIONLOGS;
   
 Delete from SystemStocks;
 DELETE from TransactionLogs;

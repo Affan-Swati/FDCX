@@ -23,6 +23,7 @@ CREATE TABLE TransactionLogs
     Remarks VARCHAR(255) DEFAULT NULL              -- Optional remarks
 );
 
+DELETE FROM TransactionLogs;
 
 -- Step 4: Create an index for faster searches on CNIC and AssetType
 CREATE INDEX idx_CNIC_AssetType ON CitizenPurchases (CNIC, AssetType);

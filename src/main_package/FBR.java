@@ -105,7 +105,7 @@ public class FBR
                 report.add("Quantity: " + quantity);
                 report.add("Unit Price: " + unitPrice);
                 report.add("Tax Collected: " + taxCollected);
-                report.add("Total Transaction Value: " + totalValue);
+                report.add("Total Transaction Value: " + (totalValue + taxCollected));
                 report.add("--------------------------------------------------");
             }
 

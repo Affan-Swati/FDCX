@@ -187,6 +187,12 @@ public class CurrencyManager // singleton
     	return tax;
     }
     
+    public void recordTransaction(String cnic, String name, String transactionType, String assetType, String assetName, 
+            String assetCode, double quantity, double unitPrice,String remarks) 
+    {
+    	fbr.recordTransaction(cnic, name, transactionType, assetType, assetName, assetCode, quantity, unitPrice, remarks);
+    }
+    
     // Display all currencies in the system
     public void displayCurrencies() 
     {

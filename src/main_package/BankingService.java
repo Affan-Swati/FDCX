@@ -31,7 +31,9 @@ public class BankingService
 			 currencyManager.addCurrencyToWallet(user.getAccount().getWallet(), currencyCode, amount);
 			 currencyManager.removeCurrencyFromWallet(user.getAccount().getWallet(), "USD", currencyManager.convertCurrency(amount, currencyManager.getCurrencyRate(currencyCode), 1.0) + currencyManager.getTax(amount, currencyCode));
 			 dbHandler.sellFiat(user.getCNIC(), "Dollar" ,  "USD", c.getRateAgainstUSD(),currencyManager.convertCurrency(amount, currencyManager.getCurrencyRate(currencyCode), 1.0) + currencyManager.getTax(amount, currencyCode));
+			 currencyManager.recordTransaction(user.getCNIC(), user.getName(), "Buy", "Fiat", c.getCurrencyName(), c.getCurrencyCode(), amount, c.getRateAgainstUSD(),"none"); 
 			 return true;
+	
 		 }
 		 else
 		 {
@@ -49,6 +51,7 @@ public class BankingService
 			 currencyManager.removeCurrencyFromWallet(user.getAccount().getWallet(), currencyCode, amount);
 			 currencyManager.addCurrencyToWallet(user.getAccount().getWallet(), "USD", currencyManager.convertCurrency(amount, currencyManager.getCurrencyRate(currencyCode), 1.0) - currencyManager.getTax(amount, currencyCode));
 			 dbHandler.buyFiat(user.getCNIC(), "Dollar","USD", c.getRateAgainstUSD(),currencyManager.convertCurrency(amount, currencyManager.getCurrencyRate(currencyCode), 1.0) - currencyManager.getTax(amount, currencyCode));
+			 currencyManager.recordTransaction(user.getCNIC(), user.getName(), "Sell", "Fiat", c.getCurrencyName(), c.getCurrencyCode(), amount, c.getRateAgainstUSD(),"none"); 
 			 return true;
 		 }
 		 else

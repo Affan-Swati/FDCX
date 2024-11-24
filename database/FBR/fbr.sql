@@ -12,14 +12,14 @@ CREATE TABLE TransactionLogs
     Name VARCHAR(100) NOT NULL,                    -- Citizen's name
     DateOfTransaction DATE NOT NULL,               -- Date of the transaction
     TransactionType ENUM('Buy', 'Sell') NOT NULL,  -- Indicates whether the transaction is a buy or sell
-    AssetType ENUM('Stock', 'Currency') NOT NULL,  -- Type of asset (Stock or Currency)
+    AssetType ENUM('Fiat', 'Crypto') NOT NULL,  -- Type of asset (Fiat or Crypto)
     AssetName VARCHAR(100) NOT NULL,               -- Name of the asset (e.g., Bitcoin, Apple Stock)
     AssetCode VARCHAR(10),                         -- Code for the asset (e.g., BTC, AAPL)
     Quantity DECIMAL(10, 2) NOT NULL,              -- Quantity of the asset
     UnitPrice DECIMAL(10, 2) NOT NULL,             -- Price per unit in USD
     TotalValue DECIMAL(10, 2) AS (Quantity * UnitPrice) STORED, -- Total value of the transaction
     TaxPercentage DECIMAL(5, 2) NOT NULL,          -- Tax percentage applied
-    TaxCollected DECIMAL(10, 2) AS (TotalValue * (TaxPercentage / 100)) STORED, -- Tax collected
+    TaxCollected DECIMAL(10, 2) AS (TotalValue * TaxPercentage) STORED, -- Tax collected
     Remarks VARCHAR(255) DEFAULT NULL              -- Optional remarks
 );
 

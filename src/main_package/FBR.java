@@ -1,6 +1,9 @@
 package main_package;
 
 import java.sql.*;
+import java.util.Date;
+import java.util.List;
+import java.util.ArrayList;
 
 
 // TODO: record transactions in FBr database
@@ -8,7 +11,6 @@ import java.sql.*;
 public class FBR 
 {
     private static final double DEFAULT_TAX = 0.075; // Default tax rate
-    private static final double SERVICE_CHARGES = 0.02; //
     private static final String connectionString = "jdbc:mysql://localhost:3306/FBR"; // Database URL
     private static final String USER = "root"; // Database username
     private static final String PASSWORD = "Affan@2004"; // Database password
@@ -21,12 +23,12 @@ public class FBR
    
     public double calculateTax(double amount)
     {
-    	return (DEFAULT_TAX * amount) + (SERVICE_CHARGES * amount);
+    	return (DEFAULT_TAX * amount);
     }
     
     // Record a new transaction (buy/sell)
     public void recordTransaction(String cnic, String name, String transactionType, String assetType, String assetName, 
-                                  String assetCode, double quantity, double unitPrice, double taxPercentage, String remarks) 
+                                  String assetCode, double quantity, double unitPrice,String remarks) 
     {
         String query = "INSERT INTO TransactionLogs (CNIC, Name, DateOfTransaction, TransactionType, AssetType, AssetName, AssetCode, Quantity, UnitPrice, TaxPercentage, Remarks) " +
                        "VALUES (?, ?, CURDATE(), ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -41,7 +43,7 @@ public class FBR
             stmt.setString(6, assetCode);
             stmt.setDouble(7, quantity);
             stmt.setDouble(8, unitPrice);
-            stmt.setDouble(9, taxPercentage);
+            stmt.setDouble(9, DEFAULT_TAX);
             stmt.setString(10, remarks);
 
             int rowsAffected = stmt.executeUpdate();
@@ -57,9 +59,11 @@ public class FBR
     }
 
     // Generate a transaction report for a user
-    public void generateTransactionReport(String cnic) 
+    public static List<String> generateTaxReport(String cnic) 
     {
         String query = "SELECT * FROM TransactionLogs WHERE CNIC = ?";
+        List<String> report = new ArrayList<>();
+
         try (Connection conn = DriverManager.getConnection(connectionString, USER, PASSWORD);
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
@@ -71,8 +75,9 @@ public class FBR
             double totalSellValue = 0.0;
             boolean hasTransactions = false;
 
-            System.out.println("Transaction Report for CNIC: " + cnic);
-            System.out.println("--------------------------------------------------");
+            report.add("Transaction Report for CNIC: " + cnic);
+            report.add("--------------------------------------------------");
+
             while (rs.next()) {
                 hasTransactions = true;
                 String name = rs.getString("Name");
@@ -92,31 +97,33 @@ public class FBR
                 }
                 totalTaxCollected += taxCollected;
 
-                System.out.println("Name: " + name);
-                System.out.println("Date of Transaction: " + dateOfTransaction);
-                System.out.println("Transaction Type: " + transactionType);
-                System.out.println("Asset Type: " + assetType);
-                System.out.println("Asset Name: " + assetName);
-                System.out.println("Quantity: " + quantity);
-                System.out.println("Unit Price: " + unitPrice);
-                System.out.println("Tax Collected: " + taxCollected);
-                System.out.println("Total Transaction Value: " + totalValue);
-                System.out.println("--------------------------------------------------");
+                report.add("Name: " + name);
+                report.add("Date of Transaction: " + dateOfTransaction);
+                report.add("Transaction Type: " + transactionType);
+                report.add("Asset Type: " + assetType);
+                report.add("Asset Name: " + assetName);
+                report.add("Quantity: " + quantity);
+                report.add("Unit Price: " + unitPrice);
+                report.add("Tax Collected: " + taxCollected);
+                report.add("Total Transaction Value: " + totalValue);
+                report.add("--------------------------------------------------");
             }
 
             if (hasTransactions) {
-                System.out.println("Summary:");
-                System.out.println("Total Buy Value: " + totalBuyValue);
-                System.out.println("Total Sell Value: " + totalSellValue);
-                System.out.println("Total Tax Collected: " + totalTaxCollected);
+                report.add("Summary:");
+                report.add("Total Buy Value: " + totalBuyValue);
+                report.add("Total Sell Value: " + totalSellValue);
+                report.add("Total Tax Collected: " + totalTaxCollected);
             } else {
-                System.out.println("No transactions found for CNIC: " + cnic);
+                report.add("No transactions found for CNIC: " + cnic);
             }
 
-        } catch (SQLException e) 
-        {
+        } catch (SQLException e) {
             e.printStackTrace();
+            report.add("Error retrieving transaction report for CNIC: " + cnic);
         }
+
+        return report;
     }
 
 	public static double getDefaultTax() 

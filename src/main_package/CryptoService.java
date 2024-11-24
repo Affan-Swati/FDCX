@@ -33,6 +33,7 @@ public class CryptoService
 			 currencyManager.addCurrencyToWallet(user.getAccount().getWallet(), cryptoCode, amount);
 			 currencyManager.removeCurrencyFromWallet(user.getAccount().getWallet(), "USD", currencyManager.convertCurrency(amount, currencyManager.getCurrencyRate(cryptoCode), 1.0) + currencyManager.getTax(amount, cryptoCode));
 			 dbHandler.sellFiat(user.getCNIC(), "Dollar", "USD", c.getRateAgainstUSD(),currencyManager.convertCurrency(amount, currencyManager.getCurrencyRate(cryptoCode), 1.0) + currencyManager.getTax(amount, cryptoCode));
+			 currencyManager.recordTransaction(user.getCNIC(), user.getName(), "Buy", "Crypto", c.getCurrencyName(), c.getCurrencyCode(), amount, c.getRateAgainstUSD(),"none"); 
 			 return true;
 		 }
 		 else
@@ -52,6 +53,7 @@ public class CryptoService
 			 currencyManager.removeCurrencyFromWallet(user.getAccount().getWallet(), cryptoCode, amount);
 			 currencyManager.addCurrencyToWallet(user.getAccount().getWallet(), "USD", currencyManager.convertCurrency(amount, currencyManager.getCurrencyRate(cryptoCode), 1.0) - currencyManager.getTax(amount, cryptoCode));
 			 dbHandler.buyFiat(user.getCNIC(), "Dollar","USD", c.getRateAgainstUSD(),currencyManager.convertCurrency(amount, currencyManager.getCurrencyRate(cryptoCode), 1.0) - currencyManager.getTax(amount, cryptoCode));
+			 currencyManager.recordTransaction(user.getCNIC(), user.getName(), "Sell", "Crypto", c.getCurrencyName(), c.getCurrencyCode(), amount, c.getRateAgainstUSD(),"none"); 
 			 return true;
 		 }
 		 else

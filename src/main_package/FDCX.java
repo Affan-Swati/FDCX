@@ -271,6 +271,11 @@ public class FDCX
     	return null;
     }
     
+    public List<TransactionLog> getTransactionLogs()
+    {
+    	return transactionLogs;
+    }
+    
     public Admin getAdmin(String adminId)
     {
     	for(Admin admin : admins)
@@ -282,6 +287,11 @@ public class FDCX
     	}
     	
     	return null;
+    }
+    
+    public static List<String> getTaxReport(String CNIC)
+    {
+    	return FBR.generateTaxReport(CNIC);
     }
    
     // List all users

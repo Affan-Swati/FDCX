@@ -59,6 +59,61 @@ public class FDCX
         System.out.println("Admin added successfully: " + admin);
     }
     
+    // returns - > 0 for successfull login , 1 for username doesn't exist , 2 for password incorrect
+    public int userLogin(String username , String password) 
+    {
+    	Account account = null;
+    	String retrivedPassword = "";
+    	for(User u : users)
+    	{
+    		if(u.getAccount() != null && u.getAccount().getUsername().equals(username))
+    		{
+    			account = u.getAccount() ;
+    			retrivedPassword = account.getPassword();
+    		}
+    	}
+    	
+    	if(account == null)
+    	{
+    		return 1;
+    	}
+    	
+    	if(!password.equals(retrivedPassword))
+    	{
+    		return 2;
+    	}
+    	
+    	return 0;
+    }
+    
+    // returns - > 0 for successfull login , 1 for username doesn't exist , 2 for password incorrect
+    public int adminLogin(String username , String password) 
+    {
+    	Account account = null;
+    	String retrivedPassword = "";
+    	for(Admin a : admins)
+    	{
+    		if(a.getAccount() != null && a.getAccount().getUsername().equals(username))
+    		{
+    			account = a.getAccount() ;
+    			retrivedPassword = account.getPassword();
+    		}
+    	}
+    	
+    	if(account == null)
+    	{
+    		return 1;
+    	}
+    	
+    	if(!password.equals(retrivedPassword))
+    	{
+    		return 2;
+    	}
+    	
+    	return 0;
+    }
+    
+    
     public void createUserAccount(User user , String username, String password)
     {
     	if(!user.isVerified())

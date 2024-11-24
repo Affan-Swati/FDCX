@@ -67,7 +67,6 @@ CREATE TABLE Wallets
 CREATE TABLE Subscriptions 
 (
     SubscriptionID INT AUTO_INCREMENT PRIMARY KEY, -- Unique ID for each subscription
-    Name VARCHAR(100) NOT NULL,                    -- Subscription name (e.g., Basic, Premium)
     Type ENUM('monthly', 'quarterly', 'yearly', 'cancelled') NOT NULL, -- Type of subscription
     Price DECIMAL(10, 2) NOT NULL,                 -- Subscription price
     RenewalDate DATE NOT NULL                      -- Renewal date for the subscription
@@ -85,6 +84,7 @@ CREATE TABLE UserStocks
 );
 
 -- For currencies
+
 
 CREATE TABLE UserCurrencies 
 (
@@ -141,6 +141,7 @@ INSERT INTO UserCurrenies (UserID, CurrencyName, CurrencyCode,RateAgainstUSD,Amo
  SELECT * FROM USERCURRENCIES;
  Select * From SystemCurrencies;
  SELECT * FROM TRANSACTIONLOGS;
+ SELECT * FROM Subscriptions;
   
 Delete from SystemStocks;
 DELETE from TransactionLogs;
@@ -152,3 +153,4 @@ Delete from Accounts ;
 Delete from Wallets ;
 Delete From Users ;
 DELETE FROM ADMINS;
+DELETE FROM SUBSCRIPTIONS;

@@ -15,8 +15,9 @@ public class FDCX
     private BankingService bankingService;
     private CryptoService cryptoService;
     private NADRA nadra; 
+    private static FDCX instance;
 
-    public FDCX() 
+    private FDCX() 
     {
         users = new ArrayList<>();
         admins = new ArrayList<>();
@@ -27,6 +28,17 @@ public class FDCX
         bankingService = new BankingService();
         cryptoService = new CryptoService();
     }
+    
+    public static FDCX getInstance()
+    {
+    	if(instance == null)
+    	{
+    		instance = new FDCX();
+    	}
+    	
+    	return instance;
+    }
+    
 
     // USE CASE : REGISTER USER
     public void registerUser(String name,String email,String CNIC,String phoneNumber , LocalDate DOB) 
@@ -187,6 +199,11 @@ public class FDCX
     	
     	
     	user.getAccount().setLoyaltyPoints(0);
+    	
+    	if(!user.getAccount().getSubscription().getType().equals("cancelled"))
+    	{
+    		points += 1000;
+    	}
     
     	dbHandler.updateUserBalance(user.getCNIC(), "Dollar" ,"USD", 1.0 ,points/10 , "Fiat" , true);
     	dbHandler.updateSystemBalance( "Dollar" ,"USD", 1.0 ,points/10 , "Fiat" , false);
@@ -247,6 +264,39 @@ public class FDCX
     }
     
     
+    public void subscribe (User user , String type)
+    {
+    	double USDBalance = user.getAccount().getWallet().getCurrencyBalance("USD");
+    	
+    	if(user.getAccount().getSubscription().subscribe(type, user.getCNIC(), USDBalance))
+    	{
+    		user.getAccount().getWallet().removeCurrency("USD", user.getAccount().getSubscription().getPrice());
+    		CurrencyManager.getInstance().addCurrency("Dollar", "USD", 1.0 ,"Fiat", user.getAccount().getSubscription().getPrice());
+    		this.logTransaction(user, "USD",user.getAccount().getSubscription().getPrice() , "Subscription");
+    	}
+    	
+    	else
+    	{
+    		System.out.println("SUBSCRIPTION FAILED!");
+    	}
+    	
+    }
+    
+    public void renewSubscription(User user) 
+    {
+       user.getAccount().getSubscription().renewSubscription();
+    }
+
+    public void cancelSubscription(User user) 
+    {
+    	user.getAccount().getSubscription().cancelSubscription();
+    }
+
+    public void changeSubscription(User user,String newType) 
+    {
+       user.getAccount().getSubscription().changeSubscription(newType);
+    }
+    
     private boolean isUser(String userId)
     {
     	for(User user : users)
@@ -258,6 +308,7 @@ public class FDCX
     	}
     	return false;
     }
+    
     public User getUser(String userId)
     {
     	for(User user : users)

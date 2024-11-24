@@ -33,7 +33,7 @@ public class Wallet
         System.out.println(amount + " units of " + currencyCode + " added to wallet.");
     }
 
-    // Remove a specific amount of a currency from the wallet@200
+    // Remove a specific amount of a currency from the wallet
     public boolean removeCurrency(String currencyCode, double amount) 
     {
         if (amount < 0) 

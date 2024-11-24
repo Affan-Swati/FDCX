@@ -3,6 +3,7 @@ package main_package;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.*;
+import java.time.*;
 
 public class DBHandler // singleton 
 {
@@ -573,4 +574,98 @@ public class DBHandler // singleton
         }
         return 0.0; // Return 0.0 if stock is not found or an error occurred
     }
+    
+    // Subscription management methods
+    
+    public boolean userSubscription(String userId, String type, double price, LocalDate renewalDate) 
+    {
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD)) 
+        {
+            // Step 1: Add a new subscription entry in the Subscriptions table
+            int subscriptionId = addSubscription(type, price, renewalDate);
+
+            if (subscriptionId == -1) {
+                System.out.println("Failed to add subscription to the Subscriptions table.");
+                return false;
+            }
+
+            // Step 2: Update the user's account with the SubscriptionID
+            String updateAccountQuery = "UPDATE Accounts SET SubscriptionID = ? WHERE UserID = ?";
+            try (PreparedStatement stmt = conn.prepareStatement(updateAccountQuery)) {
+                stmt.setInt(1, subscriptionId);
+                stmt.setString(2, userId);
+
+                int rowsAffected = stmt.executeUpdate();
+                if (rowsAffected > 0) {
+                    System.out.println("Subscription successfully updated for user: " + userId);
+                    return true;
+                } else {
+                    System.out.println("Failed to update the user's account with SubscriptionID.");
+                    return false;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public int addSubscription(String type, double price, LocalDate renewalDate) 
+    {
+        String query = "INSERT INTO Subscriptions (Type, Price, RenewalDate) VALUES (?, ?, ?)";
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setString(1, type);
+            stmt.setDouble(2, price);
+            stmt.setDate(3, java.sql.Date.valueOf(renewalDate)); // Convert LocalDate to SQL Date
+
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected > 0) {
+                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        return generatedKeys.getInt(1); // Return the generated SubscriptionID
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1; // Failed to add subscription
+    }
+    
+    public int getSubscriptionID(String type, LocalDate renewalDate) 
+    {
+        String query = "SELECT SubscriptionID FROM Subscriptions WHERE Type = ? AND RenewalDate = ?";
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setString(1, type);
+            stmt.setDate(2,  java.sql.Date.valueOf(renewalDate)); // Convert LocalDate to SQL Date
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("SubscriptionID");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1; // Return -1 if subscription not found
+    }
+
+    public boolean updateAccountSubscription(String userId, int subscriptionId) 
+    {
+        String query = "UPDATE Accounts SET SubscriptionID = ? WHERE UserID = ?";
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, subscriptionId);
+            stmt.setString(2, userId);
+
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0; // Return true if the update was successful
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false; // Return false if the update failed
+    }
+     
 }

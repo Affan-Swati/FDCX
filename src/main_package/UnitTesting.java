@@ -209,5 +209,32 @@ public class UnitTesting
 //		}
 //	}
 	
+	@Test
+	public void subscriptionTesting()
+	{
+		FDCX fdcx = FDCX.getInstance();
+		
+		fdcx.addAdmin("Azlan Awan", "azlan.awan@gmail.com", "1234512398987", "+923335672345", LocalDate.of(2023, 04, 27),"azlan","123");
+		fdcx.registerUser("Affan Ahmad", "affanswati12@gmail.com", "3740583626159", "+923339464521", LocalDate.of(2004, 04, 12));
+		User user = fdcx.getUser("3740583626159");
+		fdcx.verifyUser(user);
+		fdcx.createUserAccount(user,"affan","123");
+
+		
+		fdcx.addCurrencyToSystem("Dollar", "USD", 1.0, "Fiat", 20000);
+		fdcx.addCurrencyToSystem("Pound", "GBP", 0.85, "Fiat", 10000);
+		fdcx.addCurrencyToSystem("Bitcoin", "BTC", 0.01, "Crypto", 18);
+		
+		DBHandler.getInstance().updateUserBalance(user.getCNIC(), "Dollar", "USD", 1.0, 200000, "Fiat", true);
+		user.getAccount().getWallet().addCurrency("USD", 200000);
+		
+		fdcx.depositFunds("Fiat", user, "GBP", 2000);
+		fdcx.depositFunds("Crypto", user, "BTC", 3);
+		
+		fdcx.subscribe(user, "monthly");
+		
+		
+	}
+	
 	
 }

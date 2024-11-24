@@ -35,11 +35,6 @@ public class Account
     	 this.password = password;
     }
     
-    public String getTransactionHistory()
-    {
-    	// TODO: use DB to get transaction logs for the user
-    	return "";
-    }
     
     public void addStock(Stock stock , int quantity)
     {

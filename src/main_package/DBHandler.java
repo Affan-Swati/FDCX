@@ -620,6 +620,26 @@ public class DBHandler // singleton
         return false;
     }
 
+//    public int getSubscriptionID(String type, LocalDate renewalDate) 
+//    {
+//        String query = "SELECT SubscriptionID FROM Subscriptions WHERE Type = ? AND RenewalDate = ?";
+//        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
+//             PreparedStatement stmt = conn.prepareStatement(query)) {
+//            stmt.setString(1, type);
+//            stmt.setDate(2,  java.sql.Date.valueOf(renewalDate)); // Convert LocalDate to SQL Date
+//
+//            try (ResultSet rs = stmt.executeQuery()) {
+//                if (rs.next()) {
+//                    return rs.getInt("SubscriptionID");
+//                }
+//            }
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//        }
+//        return -1; // Return -1 if subscription not found
+//    }
+
+    
     public int addSubscription(String type, double price, LocalDate renewalDate) 
     {
         String query = "INSERT INTO Subscriptions (Type, Price, RenewalDate) VALUES (?, ?, ?)";
@@ -643,25 +663,6 @@ public class DBHandler // singleton
         return -1; // Failed to add subscription
     }
     
-    public int getSubscriptionID(String type, LocalDate renewalDate) 
-    {
-        String query = "SELECT SubscriptionID FROM Subscriptions WHERE Type = ? AND RenewalDate = ?";
-        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setString(1, type);
-            stmt.setDate(2,  java.sql.Date.valueOf(renewalDate)); // Convert LocalDate to SQL Date
-
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    return rs.getInt("SubscriptionID");
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return -1; // Return -1 if subscription not found
-    }
-
     public boolean updateAccountSubscription(String userId, int subscriptionId) 
     {
         String query = "UPDATE Accounts SET SubscriptionID = ? WHERE UserID = ?";
@@ -676,6 +677,91 @@ public class DBHandler // singleton
             e.printStackTrace();
         }
         return false; // Return false if the update failed
+    }
+    
+//    public void changeAccountSubscriptionType(String userID , String newType , double price, LocalDate renewalDate)
+//    {
+//    	int subscriptionID = this.getSubscriptionID(userID);
+//    	this.deleteSubscription(subscriptionID);
+//    	int newSubscriptionID = this.addSubscription(newType, price, renewalDate);
+//    	this.updateAccountSubscription(userID, newSubscriptionID);
+//    	
+//    	
+//    }
+    
+    
+  public void cancelSubscription(String userID)
+  {
+	  
+  	int subscriptionID = this.getSubscriptionID(userID);
+  	
+    String query = "UPDATE Accounts SET SubscriptionID = NULL WHERE UserID = ?";
+    try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
+         PreparedStatement stmt = conn.prepareStatement(query)) {
+        stmt.setString(1, userID);
+
+        stmt.executeUpdate();
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    
+  	this.deleteSubscription(subscriptionID);
+  }
+    
+  private int getSubscriptionID(String userID) 
+  {
+      String query = "SELECT SubscriptionID FROM Accounts WHERE userID = ?";
+      try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
+           PreparedStatement stmt = conn.prepareStatement(query)) {
+          stmt.setString(1, userID);
+         
+          try (ResultSet rs = stmt.executeQuery()) 
+          {
+              if (rs.next()) 
+              {
+                  return rs.getInt("SubscriptionID");
+              }
+          }
+      } catch (SQLException e) {
+          e.printStackTrace();
+      }
+      return -1; // Return -1 if subscription not found
+  }
+  
+  private void deleteSubscription(int subscriptionID) 
+  {
+	    String deleteUser = "DELETE FROM SUBSCRIPTIONS WHERE subscriptionID = ?";
+	    try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
+	         PreparedStatement stmt = conn.prepareStatement(deleteUser)) 
+	    {
+
+	        stmt.setInt(1, subscriptionID); // Set the user ID parameter
+
+	        stmt.executeUpdate(); // Execute the deletion
+
+	    } catch (SQLException e) {
+	        e.printStackTrace(); // Print stack trace for debugging
+	    }
+	}
+
+    public void updateRenewalDate(String userID , LocalDate renewalDate)
+    {
+    	int subscriptionID = this.getSubscriptionID(userID);
+    	
+    	String query = "UPDATE Subscriptions SET RenewalDate = ? WHERE SubscriptionID = ?";
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(query)) 
+        {
+        	
+        	stmt.setDate(1, java.sql.Date.valueOf(renewalDate));
+        	stmt.setInt(2, subscriptionID);
+
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
      
 }

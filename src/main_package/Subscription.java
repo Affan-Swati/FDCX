@@ -44,7 +44,7 @@ public class Subscription
         // Check if the user has enough funds and update the database
         if (canSubscribeAndUpdateFunds(userId,USDBalance)) 
         {
-            this.renewSubscription();
+            this.renewSubscription(userId);
             dbHandler.userSubscription(userId, this.type, this.price, this.renewalDate);
             
             System.out.println("Subscription successful. Next renewal date: " + this.renewalDate);
@@ -58,7 +58,7 @@ public class Subscription
         }
     }
 
-    public void renewSubscription() 
+    public void renewSubscription(String userID) 
     {
         if (this.type.equals("monthly"))
         {
@@ -72,16 +72,22 @@ public class Subscription
         {
             renewalDate = DateTime.getDateAfterMonths(12);
         }
+        
+        else
+        	return;
+        
+        dbHandler.updateRenewalDate(userID , renewalDate);
     }
 
-    public void cancelSubscription() 
+    public void cancelSubscription(String userID) 
     {
         this.type = "cancelled";
+        dbHandler.cancelSubscription(userID);
     }
 
     public void changeSubscription(String newType) 
     {
-        this.type = newType;
+        this.type = newType;        
     }
 
     public boolean canSubscribeAndUpdateFunds(String userId , double USDBalance) 

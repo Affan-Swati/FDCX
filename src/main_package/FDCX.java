@@ -335,6 +335,7 @@ public class FDCX
     		user.getAccount().getWallet().removeCurrency("USD", user.getAccount().getSubscription().getPrice());
     		CurrencyManager.getInstance().addCurrency("Dollar", "USD", 1.0 ,"Fiat", user.getAccount().getSubscription().getPrice());
     		this.logTransaction(user, "USD",user.getAccount().getSubscription().getPrice() , "Subscription");
+    		CurrencyManager.getInstance().recordTransaction(user.getCNIC(), user.getName(), "Sell", "Fiat", "Dollar", "USD", user.getAccount().getSubscription().getPrice(), 1.0,"Subscription Bought"); 
     	}
     	
     	else
@@ -346,17 +347,24 @@ public class FDCX
     
     public void renewSubscription(User user) 
     {
-       user.getAccount().getSubscription().renewSubscription();
+       user.getAccount().getSubscription().renewSubscription(user.getCNIC());
+       user.getAccount().getWallet().removeCurrency("USD", user.getAccount().getSubscription().getPrice());
+       
+	   CurrencyManager.getInstance().addCurrency("Dollar", "USD", 1.0 ,"Fiat", user.getAccount().getSubscription().getPrice());
+	   this.logTransaction(user, "USD",user.getAccount().getSubscription().getPrice() , "Subscription");
+	   CurrencyManager.getInstance().recordTransaction(user.getCNIC(), user.getName(), "Sell", "Fiat", "Dollar", "USD", user.getAccount().getSubscription().getPrice(), 1.0,"Subscription renewal");
     }
 
     public void cancelSubscription(User user) 
     {
-    	user.getAccount().getSubscription().cancelSubscription();
+    	user.getAccount().getSubscription().cancelSubscription(user.getCNIC());
     }
 
     public void changeSubscription(User user,String newType) 
     {
        user.getAccount().getSubscription().changeSubscription(newType);
+       this.cancelSubscription(user);
+       this.subscribe(user, newType);
     }
     
     private boolean isUser(String userId)
